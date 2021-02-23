@@ -4,7 +4,7 @@ This program is the fruit of a scientific collaboration of the consortium [Twist
 This is a suite of programs to generate quantum chemistry program inputs to compute IMS maps, gather results of the user performed calculations and preview the results.
 
 Any publication resulting from the use of this program requires the citation of this article:
-"Isotropic Magnetic Shielding 3D Maps: a Resonance Perspective in Non-planar Polycyclic Aromatic -or not- Hydrocarbons" by 
+"Isotropic magnetic shielding 3D maps: visualizing electron delocalization in contorted pi-conjugated hydrocarbons" by 
 Albert Artigas, Denis Hagebaum-Reignier, Yannick Carissan and Yoann Coquerel (title not definitive, in preparation)
 The user is strongly advised to read this publication before using the programs.
 
