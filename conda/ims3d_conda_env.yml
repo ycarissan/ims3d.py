@@ -1,0 +1,8 @@
+name: ims3d_env
+channels:
+ - conda-forge
+dependencies:
+ - pymatgen
+ - rdkit
+ - numpy
+ - pyvista
