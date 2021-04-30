@@ -1,4 +1,4 @@
-# Read before use
+# Read before use (periodic preview)
 This program is the fruit of a scientific collaboration of the consortium [Twistar](https://twistar.home.blog/).
 
 This is a suite of programs to generate quantum chemistry program inputs to compute IMS maps, gather results of the user performed calculations and preview the results.
