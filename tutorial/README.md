@@ -2,20 +2,20 @@
 For this tutorial to work, you need a proper xyz file (one is provided in this directory).
 
 Furthermore, the installation must have been done properly (your PATH should contain the directory where the
-python programs ims3d.py, ims3d_harv.py and ims3d_view.py are located) and the dependancies fullfiled.
+python programs ims3d.py, ims3d\_harv.py and ims3d\_view.py are located) and the dependancies fullfiled.
 
 ## Naphtalene with default grid and 1 angström radius surface
 
 0. Prerequisites
 
 For this tutorial to work, you need to have installed the ims3d suite and activated
-the conda environment if you decided to install it with conda:
+the conda environment if you decided to install it [with conda](https://github.com/ycarissan/ims3d.py#installation):
 
 ```
 conda activate ims3d_env
 ```
 
-The IMS3D\_PATH variable shoud be setup as described in the (installation manual){https://github.com/ycarissan/ims3d.py#installation}.
+The IMS3D\_PATH variable shoud be setup as described in the [installation manual](https://github.com/ycarissan/ims3d.py#installation).
 
 Furthermore, you should be in the tutorial directory or in a directory which contains
 a file named naphtalene.xyz with a geometry in xyz format:
@@ -61,4 +61,4 @@ python3 ${IMS3D_PATH}/ims3d_harv.py input_batch_00000.log
 python3 ${IMS3D_PATH}/ims3d_view.py
 ```
 When a window pops u, press "q" to exit.
-Viewing can be done with different rendering (run ims3d_view -h for available options)
+Viewing can be done with different rendering (run ims3d\_view -h for available options)
