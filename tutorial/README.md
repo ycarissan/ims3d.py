@@ -10,7 +10,7 @@ python programs ims3d.py, ims3d_harv.py and ims3d_view.py are located) and the d
 
 ```
 cd tutorial
-python3 ../ims3d.py -r 1 naphtalene.xyz 
+python3 ${IMS3D_PATH}/ims3d.py -r 1 naphtalene.xyz 
 ```
 
 2. Gaussian calculation
@@ -37,11 +37,11 @@ scp REMOTE_MACHINE:INPUT_PATH/*.log .
 3. Gathering of the computed IMS
 
 ```
-python3 ../ims3d_harv.py input_batch_00000.log
+python3 ${IMS3D_PATH}/ims3d_harv.py input_batch_00000.log
 ```
 4. View of the results
 ```
-python3 ../ims3d_view.py
+python3 ${IMS3D_PATH}/ims3d_view.py
 ```
 When a window pops u, press "q" to exit.
 Viewing can be done with different rendering (run ims3d_view -h for available options)
