@@ -23,7 +23,7 @@ get_turbofile
 creates a submit.job file.
 Edit submit.job to run
 ```
-jobex -c 100
+jobex -riper -c 100
 ```
 Finally:
 ```
