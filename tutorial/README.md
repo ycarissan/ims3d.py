@@ -6,10 +6,27 @@ python programs ims3d.py, ims3d_harv.py and ims3d_view.py are located) and the d
 
 ## Naphtalene with default grid and 1 angström radius surface
 
+0. Prerequisites
+
+For this tutorial to work, you need to have installed the ims3d suite and activated
+the conda environment if you decided to install it with conda:
+
+```
+conda activate ims3d_env
+```
+
+The IMS3D\_PATH variable shoud be setup as described in the installation manual.
+
+Furthermore, you should be in the tutorial directory or in a directory which contains
+a file named naphtalene.xyz with a geometry in xyz format:
+
+```
+cd ${IMS3D_PATH}/tutorial
+```
+
 1. Generation of the com files
 
 ```
-cd tutorial
 python3 ${IMS3D_PATH}/ims3d.py -r 1 naphtalene.xyz 
 ```
 
