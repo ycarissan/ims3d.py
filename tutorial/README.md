@@ -21,8 +21,11 @@ python3 ../ims3d.py -r 1 naphtalene.xyz
 scp *.com REMOTE_MACHINE:INPUT_PATH
 ```
 
-2.2. Run gaussian on all _com_ files
+2.2. Run gaussian on all _com_ files 
 
+```
+subg16 input_batch_00000.com
+```
 #  ☕☕☕
 
 2.3. Transfert of the _log_ files back from the cluster (if needed)
