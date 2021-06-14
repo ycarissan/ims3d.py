@@ -15,7 +15,7 @@ the conda environment if you decided to install it with conda:
 conda activate ims3d_env
 ```
 
-The IMS3D\_PATH variable shoud be setup as described in the installation manual.
+The IMS3D\_PATH variable shoud be setup as described in the (installation manual){https://github.com/ycarissan/ims3d.py#installation}.
 
 Furthermore, you should be in the tutorial directory or in a directory which contains
 a file named naphtalene.xyz with a geometry in xyz format:
