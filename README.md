@@ -39,7 +39,8 @@ After this is done, you need to add the directory containing the programs to you
 
 In bash (replace path_of_the_ims3d.py_file by an appropriate value)
 ```
-export PATH=path_of_the_ims3d.py_file:${PATH}
+export IMS3D_PATH=path_of_the_ims3d.py_file
+export PATH=${IMS3D_PATH}:${PATH}
 ```
 To make these programs permaneetly available you should add this line to your .bashrc file
 
