@@ -6,3 +6,4 @@ dependencies:
  - rdkit
  - numpy
  - pyvista
+ - scipy >= 1.2.0
