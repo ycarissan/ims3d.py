@@ -6,3 +6,11 @@ $cell
 $kpoints
 nkpoints 10
 ```
+To optimize the cell add:
+```
+$optcell
+```
+and run 
+```
+jobex
+```
