@@ -10,7 +10,7 @@ $periodic 1
 $cell
     4.6843902891
 $kpoints
-nkpoints 10
+nkpoints 9
 ```
 To optimize the cell add __before the $end statement__:
 ```
