@@ -10,7 +10,15 @@ The user is strongly advised to read this publication before using the programs.
 
 # Installation
 ## Requirements
-### Compulsory
+### Using Conda
+Install conda : [https://docs.conda.io/projects/conda/en/latest/index.html](https://docs.conda.io/projects/conda/en/latest/index.html)
+Generate an environment using the conda/ims3d_conda_env.yml:
+```
+conda env create -f conda/ims3d_conda_env.yml
+conda activate ims3d_env
+```
+### Otherwise
+#### Compulsory
 - Python 3
 - [openbabel](http://openbabel.org/wiki/Main_Page)
 - [numpy](https://numpy.org/)
@@ -18,7 +26,7 @@ The user is strongly advised to read this publication before using the programs.
 - [pymatgen](https://pymatgen.org/)
 - [Rdkit](http://rdkit.org/)
 - Eugene Eeo's geode library is embedded in the distribution but can be available [here](https://github.com/eugene-eeo/spheres-from-triangles)
-### Optional
+#### Optional
 - [pyvista](https://www.pyvista.org/) (for the viewer only)
 - [open3d](http://www.open3d.org/) (for preview only) will be replaced fully by pyvista in the future
 
@@ -31,7 +39,8 @@ After this is done, you need to add the directory containing the programs to you
 
 In bash (replace path_of_the_ims3d.py_file by an appropriate value)
 ```
-export PATH=path_of_the_ims3d.py_file:${PATH}
+export IMS3D_PATH=path_of_the_ims3d.py_file
+export PATH=${IMS3D_PATH}:${PATH}
 ```
 To make these programs permaneetly available you should add this line to your .bashrc file
 

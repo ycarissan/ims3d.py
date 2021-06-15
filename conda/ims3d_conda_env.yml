@@ -2,7 +2,8 @@ name: ims3d_env
 channels:
  - conda-forge
 dependencies:
- - pymatgen
- - rdkit
- - numpy
- - pyvista
+ - pymatgen >= 2020.10.20
+ - rdkit >= 2020.09
+ - numpy >= 1.19.2
+ - pyvista >= 0.27.2
+ - scipy >= 1.2.0
