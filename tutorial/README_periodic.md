@@ -4,7 +4,7 @@ tp -g geom.xyz -n -d 'b3-lyp'
 ```
 creates a control file.
 
-For a periodic calulation, you need to perfomr a TURBOMOLE calculation with the following keywords :
+For a periodic calulation, you need to perform a TURBOMOLE calculation with the following keywords __before the $end statement__:
 ```
 $periodic 1
 $cell
@@ -12,7 +12,7 @@ $cell
 $kpoints
 nkpoints 10
 ```
-To optimize the cell add:
+To optimize the cell add __before the $end statement__:
 ```
 $optcell
 ```
