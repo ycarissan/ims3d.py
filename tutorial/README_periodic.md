@@ -1,6 +1,6 @@
 To setup a TURBOMOLE calulation:
 ```
-tp -g geom.xyz -n -d 'b3-lyp'
+tp -g geom.xyz -n -d 'b-p'
 ```
 creates a control file.
 
