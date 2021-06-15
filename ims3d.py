@@ -5,7 +5,7 @@ import sys
 import argparse
 import logging
 import numpy as np
-import pymatgen
+#import pymatgen
 
 import geometry.geometry
 import graph_theory.detect_cycle
