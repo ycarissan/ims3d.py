@@ -3,7 +3,6 @@ import sys
 import argparse
 import logging
 import numpy as np
-#import pymatgen
 
 import geometry.geometry
 import graph_theory.detect_cycle
@@ -82,7 +81,8 @@ def main():
 
     #
     parser = argparse.ArgumentParser(
-        description='Generate gaussian inputs for IMS calculations.')
+        description='Generate gaussian inputs for IMS calculations.',
+        epilog="Make sure you use the python3 interpreter that comes with the conda environment. If this sentence makes no sense and you get error messages for missing librairies, please read the documentation.")
     parser.add_argument(
         '-v',
         '--verbose',
