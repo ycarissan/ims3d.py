@@ -1,7 +1,6 @@
 import sys
 import numpy as np
 import logging
-import open3d as o3d
 import colorsys
 import matplotlib.pyplot as plt
 import argparse
@@ -16,6 +15,11 @@ try :
 except ModuleNotFoundError as error:
     pyvista = None
     print("pyvista module not found")
+
+try:
+    import open3d as o3d
+except ModuleNotFoundError as error:
+    open3d = None
 
 
 # Create logger
