@@ -2,7 +2,6 @@ import sys
 import numpy as np
 import logging
 import open3d as o3d
-import pyvista as pv
 import colorsys
 import matplotlib.pyplot as plt
 import argparse
@@ -11,6 +10,12 @@ from matplotlib.colors import ListedColormap
 import geometry.geometry
 import graph_theory.detect_cycle
 import math_utils.trigonometry
+
+try :
+    import pyvista as pv
+except ModuleNotFoundError as error:
+    pyvista = None
+    print("pyvista module not found")
 
 
 # Create logger
