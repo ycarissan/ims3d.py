@@ -17,6 +17,10 @@ Generate an environment using the conda/ims3d_conda_env.yml:
 conda env create -f conda/ims3d_conda_env.yml
 conda activate ims3d_env
 ```
+__IMPORTANT__: This last command activates a python environment with all necessary dependencies. This will work __only__ with the appropriate
+python binary.
+Once the environment is activated, the proper python3 binary is used (located at ${CONDA_INSTALLATION_DIRECTORY}/envs/ims3d_env/bin).
+
 ### Otherwise
 #### Compulsory
 - Python 3
