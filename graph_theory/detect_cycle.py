@@ -6,7 +6,15 @@ import argparse
 import subprocess
 import logging
 import random
-import rdkit.Chem
+try :
+    import rdkit.Chem
+except ModuleNotFoundError as error:
+    rdkit = None
+    print("rdkit module not found")
+
+if rdkit == None:
+    print("This should not occur within the proper conda environment and a call with the appropriate python3 interpreter.")
+    sys.exit()
 
 class MolecularGraph():
 

@@ -1,8 +1,28 @@
-import numpy as np
-import scipy.spatial.transform
+import sys
 import random
-import pymatgen
-import pymatgen.transformations.standard_transformations
+
+try :
+    import numpy as np
+except ModuleNotFoundError as error:
+    numpy = None
+    print("numpy module not found")
+
+try :
+    import scipy.spatial.transform
+except ModuleNotFoundError as error:
+    scipy = None
+    print("scipy module not found")
+
+try :
+    import pymatgen
+    import pymatgen.transformations.standard_transformations
+except ModuleNotFoundError as error:
+    pymatgen = None
+    print("pymatgen module not found")
+
+if pymatgen == None or scipy == None:
+    print("This should not occur within the proper conda environment and a call with the appropriate python3 interpreter.")
+    sys.exit()
 
 class Geometry:
     def __init__(self, filename, orient = False):
