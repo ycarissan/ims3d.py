@@ -19,7 +19,7 @@ except ModuleNotFoundError as error:
 try:
     import open3d as o3d
 except ModuleNotFoundError as error:
-    open3d = None
+    o3d = None
 
 
 # Create logger
@@ -158,7 +158,7 @@ def main():
         plt.show()
 
     geom = geometry.geometry.Geometry("geom.xyz")
-    if open3d:
+    if o3d:
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(values[:,:3])
         pcd.normals = o3d.utility.Vector3dVector(values[:,3:6])
