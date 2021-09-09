@@ -64,6 +64,11 @@ class Geometry:
                 self.atoms[i]['y'] = position[1]
                 self.atoms[i]['z'] = position[2]
 
+    def getAllAtomCoords(self):
+        coords=[]
+        for iat in range(len(self.atoms)):
+            coords.append(self.getXYZ(iat))
+        return np.array(coords)
 
     def getAtom(self, index):
         return self.atoms[index]
@@ -72,8 +77,17 @@ class Geometry:
         at = self.getAtom(index)
         return [ at['x'], at['y'], at['z'] ]
 
+    def getDistance(self, i,j):
+        x0 = self.getXYZ(i)[0]
+        y0 = self.getXYZ(i)[1]
+        z0 = self.getXYZ(i)[2]
+        x1 = self.getXYZ(j)[0]
+        y1 = self.getXYZ(j)[1]
+        z1 = self.getXYZ(j)[2]
+        return np.linalg.norm([x0-x1, y0-y1, z0-z1])
+
     def getcoords(self, atomlist):
-        """ Return the position of the atoms which determine a cycle """
+        """ Return the position of the atoms in the list given as argument """
         coords = []
         for at in atomlist:
             pos = np.asarray(self.getXYZ(at), dtype=np.float64)
@@ -99,6 +113,33 @@ class Geometry:
             fio.write("{} {} {} {}\n".format(atom['label'], atom['x'], atom['y'], atom['z']))
         fio.close()
         return xyztmp_filename
+
+#naive implementation    def getThreeNearestNeighbourgsIndices(self, index):
+#naive implementation        dist=[]
+#naive implementation        for i in range(len(self.atoms)):
+#naive implementation            dist.append(self.getDistance(index, i))
+#naive implementation        dist = np.array(dist)
+#naive implementation        order = dist.argsort()
+#naive implementation        ranks = order.argsort()
+#naive implementation        return np.where((ranks > 0) & (ranks < 4))[0]
+
+    def getThreeNearestNeighbourgsIndices(self, index):
+        """ see https://stackoverflow.com/questions/10818546/finding-index-of-nearest-point-in-numpy-arrays-of-x-and-y-coordinates """
+        xyz = self.getXYZ(index)
+        coords = self.getAllAtomCoords()
+        return scipy.spatial.KDTree(coords).query(xyz, [2, 3, 4])[1]
+
+    def getNormalToThreeNearestNeighbougsPlane(self, index):
+        i, j, k = self.getThreeNearestNeighbourgsIndices(index)
+        A = np.array(self.getXYZ(i))
+        B = np.array(self.getXYZ(j))
+        C = np.array(self.getXYZ(k))
+        AB=B-A
+        AC=C-A
+        normal_to_plane = np.cross(AB, AC)
+        if normal_to_plane[2] < 0:
+            normal_to_plane = -1 * normal_to_plane
+        return normal_to_plane
 
 def get_angle_and_axis(op):
     """Return angle and rotation axis from an symmetry operation"""
