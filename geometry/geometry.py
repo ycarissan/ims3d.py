@@ -123,11 +123,18 @@ class Geometry:
 #naive implementation        ranks = order.argsort()
 #naive implementation        return np.where((ranks > 0) & (ranks < 4))[0]
 
-    def getThreeNearestNeighbourgsIndices(self, index):
+    def getNearestNeighbourgsIndices(self, nbre, index):
         """ see https://stackoverflow.com/questions/10818546/finding-index-of-nearest-point-in-numpy-arrays-of-x-and-y-coordinates """
         xyz = self.getXYZ(index)
         coords = self.getAllAtomCoords()
-        return scipy.spatial.KDTree(coords).query(xyz, [2, 3, 4])[1]
+        #skip 0 as scipy.spatial.KDTree.query return value start from 1
+        #skip 1 as scipy.spatial.KDTree.query first value will be the atom of index 'index' itself
+        # => i + 2
+        array=[ i + 2 for i in range(nbre)]
+        return scipy.spatial.KDTree(coords).query(xyz, array)[1]
+
+    def getThreeNearestNeighbourgsIndices(self, index):
+        return self.getNearestNeighbourgsIndices(3, index)
 
     def getNormalToThreeNearestNeighbougsPlane(self, index):
         i, j, k = self.getThreeNearestNeighbourgsIndices(index)
