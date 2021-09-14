@@ -20,7 +20,7 @@ class MolecularGraph():
 
     def __init__(self,geomfile):
         mol_filename = generate_mol(geomfile, None)
-        self.molecule = rdkit.Chem.MolFromMolFile(mol_filename)
+        self.molecule = rdkit.Chem.MolFromMolFile(mol_filename, removeHs=False)
 
     def getCycles(self):
         return self.molecule.GetRingInfo().AtomRings()
@@ -50,7 +50,6 @@ def generate_mol(geomfile, logger):
 
 def main():
     print("Cycle detection library")
-
 
 if __name__ == "__main__":
     main()
