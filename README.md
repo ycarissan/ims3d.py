@@ -49,6 +49,14 @@ export PATH=${IMS3D_PATH}:${PATH}
 ```
 To make these programs permaneetly available you should add this line to your .bashrc file
 
+#Testing the graphical tools
+All graphics in the code are done using [pyvista](https://www.pyvista.org/).
+You can check if pyvista works correctly by:
+```
+python3 ${IMS3D_PATH}/tools/test_pyvista.py
+```
+If the pyvista logo appears, you are good to go with graphics.
+
 # Usage
 It is highly recommended that you reproduce the tutorial before starting your own calculations
 
@@ -58,6 +66,8 @@ Read the tutorial [here](https://github.com/ycarissan/ims3d.py/blob/master/tutor
 ## ims3d.py
 
 ```
+$ python3 ${IMS3D\_PATH}/ims3d.py -h
+
 usage: ims3d.py [-h] [-v] [-d] [-r RADIUS] [-n NPTS] [--batch BATCH] [--depth DEPTH] [-o] [-i] [-p] [-a]
                 [-c CYCLE_MAX_SIZE]
                 geomfile
@@ -72,7 +82,7 @@ optional arguments:
   -v, --verbose         More info
   -d, --debug           Debug info
   -r RADIUS, --radius RADIUS
-                        Set the radius to 1 angstrom
+                        Set the radius to the specified value angstrom
   -n NPTS, --npts NPTS  Number of angular points by half circle. default: 12
   --batch BATCH, -b BATCH
                         Change the number of bq per batch. default: infinity
