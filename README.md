@@ -66,7 +66,7 @@ Read the tutorial [here](https://github.com/ycarissan/ims3d.py/blob/master/tutor
 ## ims3d.py
 
 ```
-$ python3 ${IMS3D\_PATH}/ims3d.py -h
+$ python3 ${IMS3D_PATH}/ims3d.py -h
 
 usage: ims3d.py [-h] [-v] [-d] [-r RADIUS] [-n NPTS] [--batch BATCH] [--depth DEPTH] [-o] [-i] [-p] [-a]
                 [-c CYCLE_MAX_SIZE]
