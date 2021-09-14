@@ -49,7 +49,7 @@ export PATH=${IMS3D_PATH}:${PATH}
 ```
 To make these programs permaneetly available you should add this line to your .bashrc file
 
-#Testing the graphical tools
+# Testing the graphical tools
 All graphics in the code are done using [pyvista](https://www.pyvista.org/).
 You can check if pyvista works correctly by:
 ```
