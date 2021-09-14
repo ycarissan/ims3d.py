@@ -10,6 +10,20 @@ import grids.angular
 import grids.geode
 import interface.gaussian
 
+try :
+    import pyvista as pv
+    pyvista = True
+except ModuleNotFoundError as error:
+    pyvista = None
+    print("pyvista module not found: preview not possible")
+
+try :
+    from ims3d_view import MyPlotter
+    myplotter = True
+except ModuleNotFoundError as error:
+    print("ims3d_view not found in the current directory: preview not possible")
+    myplotter = False
+
 # Create logger
 logger = logging.getLogger('log')
 logger.setLevel(logging.DEBUG)
@@ -161,6 +175,9 @@ def main():
         logger.setLevel(logging.INFO)
     ignoreH = args.ignoreH
     preview = args.preview
+    if preview and (not pyvista or not myplotter):
+        print("Preview impossible : overriding preview to False")
+        preview = False
     ntheta = args.npts
     orient = args.orient
     angular = args.angular
@@ -217,19 +234,45 @@ def main():
     interface.gaussian.generate_gaussianFile(geom, grid, logger, maxbq = maxbq)
 
     if preview==True:
-        import open3d as o3d
-        point_cloud = np.loadtxt("points_values.csv", delimiter=",", skiprows=1)
-#        points_normals = np.loadtxt("normals.csv", delimiter=",", skiprows=1)
-        pcd = o3d.geometry.PointCloud()
-        pcd.points = o3d.utility.Vector3dVector(point_cloud[:,:3])
-#        pcd.normals = o3d.utility.Vector3dVector(points_normals[:,:3])
-#        point_rgb = valtoRGB(point_cloud[:,3])
-#        pcd.colors = o3d.utility.Vector3dVector(np.asarray(point_rgb))
-        o3d.visualization.draw_geometries([pcd])
-        poisson_mesh = o3d.geometry.TriangleMesh.create_from_point_cloud_poisson(pcd, depth=9)[0]
-        poisson_mesh.compute_vertex_normals()
-        o3d.visualization.draw_geometries([poisson_mesh])
-        o3d.io.write_triangle_mesh("./p_mesh_c.ply", poisson_mesh)
+        values =  np.loadtxt("points_values.csv", delimiter=",", skiprows=1)
+        points = values[:,:3]
+        points = pv.pyvista_ndarray(points)
+        point_cloud = pv.PolyData(points)
+        cloud = pv.wrap(point_cloud)
+        p = MyPlotter()
+        p.subplot(0, 0)
+        p.add_points(point_cloud, render_points_as_spheres=True)
+        spheres = []
+        cylinders = []
+        if True:
+            for at in geom.atoms:
+                mesh_sphere = pv.Sphere(radius=0.5, center=[at['x'], at['y'], at['z']])
+                if at['label'] == 'C':
+                    color=[0.4, 0.4, 0.4]
+                elif at['label'] == 'H':
+                    color=[0.9, 0.9, 0.9]
+                else:
+                    color=[1.0, 0.0, 0.0]
+                spheres.append(mesh_sphere)
+            molecularGraph = graph_theory.detect_cycle.MolecularGraph(geomfile)
+            for e in molecularGraph.getEdges():
+                idx1 = e.GetBeginAtomIdx()
+                idx2 = e.GetEndAtomIdx()
+                at1 = geom.getAtom(idx1)
+                at2 = geom.getAtom(idx2)
+                pos1 = np.asarray([at1['x'], at1['y'], at1['z']])
+                pos2 = np.asarray([at2['x'], at2['y'], at2['z']])
+                vect_bond = pos2 - pos1
+                middle_bond = 0.5 * (pos1 + pos2)
+
+                mesh_cylinder = pv.Cylinder(center=middle_bond, direction=vect_bond, radius=.2, height=np.linalg.norm(vect_bond))
+                cylinders.append(mesh_cylinder)
+#
+        for sphere in spheres:
+            p.add_mesh(sphere, color="tan", show_edges=False)
+        for cyl in cylinders:
+            p.add_mesh(cyl, color="tan", show_edges=False)
+        p.show()
 
 if __name__ == "__main__":
     main()
