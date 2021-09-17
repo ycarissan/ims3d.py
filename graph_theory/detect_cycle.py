@@ -6,6 +6,8 @@ import argparse
 import subprocess
 import logging
 import random
+from openbabel import openbabel
+
 try :
     import rdkit.Chem
 except ModuleNotFoundError as error:
@@ -29,24 +31,35 @@ class MolecularGraph():
         return self.molecule.GetBonds()
 
 def generate_mol(geomfile, logger):
-    """ Genere le fichier de descritpion de la geometrie en mol"""
     mol_filename = "tmpfile_{:05d}.mol".format(int(random.uniform(0, 99999)))
-    if (logger):
-        logger.info("Temporary mol file : {}".format(mol_filename))
-    proc = subprocess.Popen(["obabel",
-                             "-ixyz",
-                             geomfile,
-                             "-omol",
-                             "-O",
-                             mol_filename],
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT,
-                            universal_newlines=True)
-    stdout, stderr = proc.communicate()
-    if (logger):
-        # stderr is None because of stderr=subprocess.STDOUT in the Popen call
-        logger.info(stdout)
+    obConversion = openbabel.OBConversion()
+    obConversion.SetInAndOutFormats("xyz", "mol")
+
+    mol = openbabel.OBMol()
+    obConversion.ReadFile(mol, geomfile)
+    obConversion.WriteFile(mol, mol_filename)
+
     return mol_filename
+
+#def generate_mol(geomfile, logger):
+#    """ Genere le fichier de descritpion de la geometrie en mol"""
+#    mol_filename = "tmpfile_{:05d}.mol".format(int(random.uniform(0, 99999)))
+#    if (logger):
+#        logger.info("Temporary mol file : {}".format(mol_filename))
+#    proc = subprocess.Popen(["obabel",
+#                             "-ixyz",
+#                             geomfile,
+#                             "-omol",
+#                             "-O",
+#                             mol_filename],
+#                            stdout=subprocess.PIPE,
+#                            stderr=subprocess.STDOUT,
+#                            universal_newlines=True)
+#    stdout, stderr = proc.communicate()
+#    if (logger):
+#        # stderr is None because of stderr=subprocess.STDOUT in the Popen call
+#        logger.info(stdout)
+#    return mol_filename
 
 def main():
     print("Cycle detection library")
