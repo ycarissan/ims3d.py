@@ -36,7 +36,6 @@ Once the environment is activated, the proper python3 binary is used (located at
 - Eugene Eeo's geode library is embedded in the distribution but can be available [here](https://github.com/eugene-eeo/spheres-from-triangles)
 #### Optional
 - [pyvista](https://www.pyvista.org/) (for the viewer only)
-- [open3d](http://www.open3d.org/) (for preview only) will be replaced fully by pyvista in the future
 
 ## Getting the code
 ```
