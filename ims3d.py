@@ -212,6 +212,10 @@ def main():
     command_line = generate_command_line(args)
     print(command_line)
     logger.info(command_line)
+
+    #
+    # Generate the grid
+    #
     grid=[]
     if angular:
         if args.radius:
