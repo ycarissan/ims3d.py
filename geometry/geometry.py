@@ -25,12 +25,13 @@ if pymatgen == None or scipy == None:
     sys.exit()
 
 class Geometry:
-    def __init__(self, filename, orient = False):
+    def __init__(self, filename, orient = False, sym=False):
         lines = open(filename, "r").readlines()
         self.header=(lines[1])
         self.atoms = []
         self.pseudoatoms = []
         self.spherecenters = []
+        self.pga = None
 
         for l in lines[2:]:
             a = l.split()
@@ -41,6 +42,9 @@ class Geometry:
                 self.spherecenters.append( { 'label': "E", 'x': position[0], 'y': position[1], 'z': position[2] } )
             else:
                 self.atoms.append( { 'label': lbl, 'x': position[0], 'y': position[1], 'z': position[2] } )
+
+        if sym:
+            self.pga = pymatgen.symmetry.analyzer.PointGroupAnalyzer(geom_sym)
 
         if orient:
             filename_atoms_only = self.getgeomfilename_Atomsonly()
