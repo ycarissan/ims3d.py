@@ -244,7 +244,7 @@ def get_geode_points(depth=2, method=None):
         points.append([x, y, z])
     return np.asarray(points)
 
-def generate_geodesic_grid(geom, geodesic_grid, logger):
+def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
     grid = []
     for atom in geom.atoms+geom.spherecenters+geom.pseudoatoms:
         at    = np.array([ atom['x'], atom['y'], atom['z'] ])
