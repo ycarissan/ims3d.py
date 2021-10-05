@@ -15,6 +15,7 @@ except ModuleNotFoundError as error:
 
 try :
     import pymatgen
+    from pymatgen.io.xyz import XYZ
     import pymatgen.transformations.standard_transformations
 except ModuleNotFoundError as error:
     pymatgen = None
@@ -24,8 +25,10 @@ if pymatgen == None or scipy == None:
     print("This should not occur within the proper conda environment and a call with the appropriate python3 interpreter.")
     sys.exit()
 
+dummyElementLabel="Be"
+
 class Geometry:
-    def __init__(self, filename, orient = False, sym=False):
+    def __init__(self, filename, orient = False):
         lines = open(filename, "r").readlines()
         self.header=(lines[1])
         self.atoms = []
@@ -39,12 +42,9 @@ class Geometry:
             position = [float(a[1]), float(a[2]), float(a[3])]
             if lbl=="BQ" or lbl=="X" or lbl=="XX":
                 print("BQ found")
-                self.spherecenters.append( { 'label': "E", 'x': position[0], 'y': position[1], 'z': position[2] } )
+                self.spherecenters.append( { 'label': dummyElementLabel, 'x': position[0], 'y': position[1], 'z': position[2] } )
             else:
                 self.atoms.append( { 'label': lbl, 'x': position[0], 'y': position[1], 'z': position[2] } )
-
-        if sym:
-            self.pga = pymatgen.symmetry.analyzer.PointGroupAnalyzer(geom_sym)
 
         if orient:
             filename_atoms_only = self.getgeomfilename_Atomsonly()
@@ -68,6 +68,42 @@ class Geometry:
                 self.atoms[i]['y'] = position[1]
                 self.atoms[i]['z'] = position[2]
 
+    def getPGA(self):
+#        coords = [[0.000000, 0.000000, 0.000000],
+#          [0.000000, 0.000000, 1.089000],
+#          [1.026719, 0.000000, -0.363000],
+#          [-0.513360, -0.889165, -0.363000],
+#          [-0.513360, 0.889165, -0.363000]]
+#         methane = Molecule(["C", "H", "H", "H", "H"], coords)
+        return pymatgen.symmetry.analyzer.PointGroupAnalyzer(self.getPymatgenMolecule())
+
+    def getPymatgenMolecule(self):
+        return atoms2Molecule(self.getAllcenters())
+
+    def writePymatgenMolecule(self, filename):
+        molecule = self.getPymatgenMolecule()
+        molecule.to(filename)
+
+    def writePymatgenMoleculeSymmetryUnique(self, filename):
+        equivalent_atoms = self.getPGA().get_equivalent_atoms()
+        atoms=[]
+        for k in equivalent_atoms["eq_sets"].keys():
+            atoms.append(self.getAllcenters()[k])
+        molecule = atoms2Molecule(atoms)
+        molecule.to(filename=filename)
+        return filename
+
+    def getAtoms(self):
+        return self.atoms
+
+    def getPseudoAtoms(self):
+        return self.pseudoatoms
+
+    def getSphereCenters(self):
+        return self.spherecenters
+
+    def getAllcenters(self):
+        return self.getAtoms() + self.getPseudoAtoms() + self.getSphereCenters()
 
     def getAtom(self, index):
         return self.atoms[index]
@@ -93,7 +129,7 @@ class Geometry:
         return barycenter
 
     def addPseudoAtom(self, coords):
-        self.pseudoatoms.append( { 'label': 'E', 'x': coords[0], 'y': coords[1], 'z': coords[2] } )
+        self.pseudoatoms.append( { 'label': dummyElementLabel, 'x': coords[0], 'y': coords[1], 'z': coords[2] } )
 
     def getgeomfilename_Atomsonly(self):
         xyztmp_filename = "tmpfile_{:05d}.xyz".format(int(random.uniform(0, 99999)))
@@ -103,6 +139,17 @@ class Geometry:
             fio.write("{} {} {} {}\n".format(atom['label'], atom['x'], atom['y'], atom['z']))
         fio.close()
         return xyztmp_filename
+
+def atoms2Molecule(atoms):
+    coords=[]
+    labels=[]
+    for pt in atoms:
+        labels.append(pt["label"])
+        coords.append([pt["x"], pt["y"], pt["z"]])
+    print(labels)
+    print(coords)
+    molecule = pymatgen.core.Molecule(labels, coords)
+    return molecule
 
 def get_angle_and_axis(op):
     """Return angle and rotation axis from an symmetry operation"""
@@ -147,10 +194,8 @@ def get_rotation_vector_to_align_along_z(geom_sym):
     return rotation_vector
 
 def main():
-
-    pga = pymatgen.symmetry.analyzer.PointGroupAnalyzer(newgeom)
-    theta, axis = get_principal_axis(pga)
-    print("Principal axis found {0[0]} {0[1]} {0[2]} angle: {1}".format(axis, theta))
+    geom = Geometry("methane.xyz")
+    geom.writePymatgenMoleculeSymmetryUnique("meth.xyz")
 
 if __name__=="__main__":
     main()

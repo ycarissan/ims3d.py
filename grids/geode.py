@@ -4,6 +4,7 @@ Thanks to Eugene Eeo
 """
 import numpy as np
 import matplotlib.tri as mtri
+from geometry.geometry import dummyElementLabel
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
@@ -15,27 +16,33 @@ from collections import namedtuple
 
 class geodesic_grid:
     vdw_radii_standard = {
-            "E": 1.0, # pseudo atom
+            dummyElementLabel: 1.0,
+            dummyElementLabel.capitalize(): 1.0,
             "H": 1.1,
             "C": 1.7,
             "O": 1.52,
             "N": 1.55,
             "S": 1.55,
             "B": 1.55,
-            "Cl": 1.75
+            "BE": 1.55,
+            "Be": 1.55,
+            "CL": 1.75
             }
     def __init__(self, depth, vdw_radii=vdw_radii_standard, ignoreH = False, radius_all=None):
         self.depth = depth
         if not(radius_all == None):
             self.vdw_radii = {
-                    "E":  radius_all,
+                    dummyElementLabel:  radius_all,
+                    dummyElementLabel.capitalize():  radius_all,
                     "H":  radius_all,
                     "C":  radius_all,
                     "O":  radius_all,
                     "N":  radius_all,
                     "S":  radius_all,
                     "B":  radius_all,
-                    "Cl": radius_all
+                    "Be":  radius_all,
+                    "BE":  radius_all,
+                    "CL": radius_all
                     }
         else:
             self.vdw_radii = vdw_radii

@@ -206,6 +206,10 @@ def main():
             print(barycenter)
             geom.addPseudoAtom(barycenter)
 
+    tmpfilename="tmp_tmp.xyz"
+    geom.writePymatgenMoleculeSymmetryUnique(tmpfilename)
+    geom_sym = geometry.geometry.Geometry(tmpfilename, orient=orient)
+
     #
     # Generate the full command_line
     #
@@ -217,7 +221,7 @@ def main():
     # Generate the grid
     #
     grid=[]
-    if angular:
+    if angular: #deprecated
         if args.radius:
             radius_all = args.radius
             r_grid = grids.angular.angular_grid(ignoreH = ignoreH, ntheta = ntheta, radius_all = radius_all)
@@ -227,15 +231,39 @@ def main():
         grids.angular.writegrid(angular_grid, angular_grid_normals)
         grid = angular_grid
     else:
+
         if args.radius:
             radius_all = args.radius
-            geodesic_grid = grids.geode.geodesic_grid(ignoreH = ignoreH, depth = depth, radius_all = radius_all)
         else:
-            geodesic_grid = grids.geode.geodesic_grid(ignoreH = ignoreH, depth = depth, radius_all = None)
-        grid = grids.geode.generate_geodesic_grid(geom, geodesic_grid, logger)
-        print(len(grid))
-        grids.geode.writegrid(grid)
-    interface.gaussian.generate_gaussianFile(geom, grid, logger, maxbq = maxbq)
+            radius_all = None
+
+        geodesic_grid     = grids.geode.geodesic_grid(ignoreH = ignoreH, depth = depth, radius_all = radius_all)
+        geodesic_grid_sym = grids.geode.geodesic_grid(ignoreH = ignoreH, depth = depth, radius_all = radius_all)
+
+        grid     = grids.geode.generate_geodesic_grid(geom, geodesic_grid,     logger)
+        grid_sym = grids.geode.generate_geodesic_grid(geom_sym, geodesic_grid_sym, logger)
+
+        grid_todo=[]
+        grid_tmp=[]
+        thrs=0.01
+        for pt_sym in grid_sym:
+            for pt in grid:
+                pt_sym = np.array(pt_sym)
+                pt     = np.array(pt)
+                if (np.abs(pt[0]-pt_sym[0]) < thrs) and (np.abs(pt[1]-pt_sym[1]) < thrs) and (np.abs(pt[2]-pt_sym[2]) < thrs):
+                    grid_tmp.append(pt_sym)
+
+        pga = geom.getPGA()
+        grid_todo = grid_tmp
+        print("Group                   : {}".format(pga.sch_symbol))
+        print("Length of full     grid : {}".format(len(grid)))
+        print("Length of sym only grid : {}".format(len(grid_sym)))
+        print("Length of temp     grid : {}".format(len(grid_tmp)))
+        symmetry_operations = pga.get_symmetry_operations()
+        print("Length of actual   grid : {}".format(len(grid_todo)))
+
+        grids.geode.writegrid(grid_todo)
+    interface.gaussian.generate_gaussianFile(geom, grid_todo, logger, maxbq = maxbq)
 
     if preview==True:
         values =  np.loadtxt("points_values.csv", delimiter=",", skiprows=1)
