@@ -6,6 +6,9 @@ import numpy as np
 import matplotlib.tri as mtri
 from geometry.geometry import dummyElementLabel
 
+from tqdm import tqdm
+import simplejson as json
+
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     import sys
@@ -253,12 +256,15 @@ def get_geode_points(depth=2, method=None):
 
 def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
     grid = []
-    for atom in geom.atoms+geom.spherecenters+geom.pseudoatoms:
+    if symmetry:
+        pga = geom.getPGA()
+        symmetry_operations = pga.get_symmetry_operations()
+    for atom in tqdm(geom.atoms+geom.spherecenters+geom.pseudoatoms):
         at    = np.array([ atom['x'], atom['y'], atom['z'] ])
         radius = geodesic_grid.vdw_radii[atom['label']]
         geodesic_points = get_geode_points(geodesic_grid.depth)
         geodesic_points = np.unique(geodesic_points.round(decimals=8),axis=0)
-        for pt in geodesic_points:
+        for pt in tqdm(geodesic_points):
             #
             # Compute the distance between the point and the current atom
             #
@@ -290,6 +296,16 @@ def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
                     #
                     if (dist_point_other_at < other_radius):
                         addAtom = False
+
+            if addAtom and symmetry and len(symmetry_operations)>1:
+                for op in symmetry_operations:
+                    for i in range(len(grid)):
+                        if op.are_symmetrically_related(grid[i], point):
+                            addAtom = False
+                            break
+                    if not addAtom:
+                        break
+
             if addAtom:
                 logger.debug(
                         "Bq     {0[0]:16.10f} {0[1]:16.10f} {0[2]:16.10f} {1}\n".format(point,point[0]+point[1]))

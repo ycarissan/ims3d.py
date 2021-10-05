@@ -9,6 +9,7 @@ import graph_theory.detect_cycle
 import grids.angular
 import grids.geode
 import interface.gaussian
+from tqdm import tqdm
 
 try :
     import pyvista as pv
@@ -240,13 +241,13 @@ def main():
         geodesic_grid     = grids.geode.geodesic_grid(ignoreH = ignoreH, depth = depth, radius_all = radius_all)
         geodesic_grid_sym = grids.geode.geodesic_grid(ignoreH = ignoreH, depth = depth, radius_all = radius_all)
 
-        grid     = grids.geode.generate_geodesic_grid(geom, geodesic_grid,     logger)
+        grid     = grids.geode.generate_geodesic_grid(geom, geodesic_grid,     logger, symmetry=True)
         grid_sym = grids.geode.generate_geodesic_grid(geom_sym, geodesic_grid_sym, logger)
 
         grid_todo=[]
         grid_tmp=[]
         thrs=0.01
-        for pt_sym in grid_sym:
+        for pt_sym in tqdm(grid_sym):
             for pt in grid:
                 pt_sym = np.array(pt_sym)
                 pt     = np.array(pt)
@@ -254,15 +255,15 @@ def main():
                     grid_tmp.append(pt_sym)
 
         pga = geom.getPGA()
-        grid_todo = grid_tmp
         print("Group                   : {}".format(pga.sch_symbol))
         print("Length of full     grid : {}".format(len(grid)))
         print("Length of sym only grid : {}".format(len(grid_sym)))
         print("Length of temp     grid : {}".format(len(grid_tmp)))
         symmetry_operations = pga.get_symmetry_operations()
+        grid_todo = grid_tmp
         print("Length of actual   grid : {}".format(len(grid_todo)))
 
-        grids.geode.writegrid(grid_todo)
+        grids.geode.writegrid(grid_todo, symmetry_operations)
     interface.gaussian.generate_gaussianFile(geom, grid_todo, logger, maxbq = maxbq)
 
     if preview==True:
