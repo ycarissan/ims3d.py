@@ -9,4 +9,3 @@ dependencies:
  - scipy >= 1.2.0
  - openbabel
  - tqdm
- - simplejson
