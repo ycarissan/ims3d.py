@@ -79,6 +79,33 @@ class Geometry:
 #         methane = Molecule(["C", "H", "H", "H", "H"], coords)
         return pymatgen.symmetry.analyzer.PointGroupAnalyzer(self.getPymatgenMolecule())
 
+    def getUniqueElementsByLabels(self):
+        unique_indices = self.getPGA().get_equivalent_atoms()["eq_sets"].keys()
+        dict_atoms={}
+        for lbl in self.getUniqueLabels():
+            list_atoms=[]
+            for idx in range(len(self.getAtoms())):
+                if idx in unique_indices and self.getAtoms()[idx]["label"] == lbl:
+                    list_atoms.append(self.getAtoms()[idx])
+            dict_atoms[lbl] = list_atoms
+        return dict_atoms
+
+    def getElementsByLabels(self):
+        dict_atoms={}
+        for lbl in self.getUniqueLabels():
+            list_atoms=[]
+            for at in self.getAtoms():
+                if at["label"] == lbl:
+                    list_atoms.append(at)
+            dict_atoms[lbl] = list_atoms
+        return dict_atoms
+
+    def getUniqueLabels(self):
+        ulbls = set()
+        for at in self.getAtoms():
+            ulbls.add(at["label"])
+        return ulbls
+
     def getPymatgenMolecule(self):
         return atoms2Molecule(self.getAllcenters())
 
