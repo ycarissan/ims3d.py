@@ -285,9 +285,7 @@ def main():
     if preview==True:
         values =  np.loadtxt("points_values.csv", delimiter=",", skiprows=1)
         points = np.array(values[:,:3])
-        with open("symmetry_operations.bin","rb") as fio:
-            sym_ops = pickle.load(fio)
-            fio.close()
+        sym_ops = geometry.geometry.readSymmOps()
         points = geometry.geometry.applySymmOps(sym_ops, points)
         points = pv.pyvista_ndarray(points)
         point_cloud = pv.PolyData(points)
