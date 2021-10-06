@@ -1,5 +1,4 @@
-Last update Sep. 17th 2021 :
-Openbabel installs within the conda environment
+Last update Oct. 06th 2021
 
 # Read before use
 This program is the fruit of a scientific collaboration of the consortium [Twistar](https://twistar.home.blog/).
