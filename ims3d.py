@@ -10,6 +10,7 @@ import graph_theory.detect_cycle
 import grids.angular
 import grids.geode
 import interface.gaussian
+import interface.dalton
 from tqdm import tqdm
 
 try :
@@ -281,9 +282,11 @@ def main():
             pickle.dump(pga.get_symmetry_operations(), fio)
             fio.close()
     interface.gaussian.generate_gaussianFile(geom, grid_todo, logger, maxbq = maxbq)
+    interface.dalton.generate_daltonFile(geom, grid_todo, logger, maxbq = 50)
 
     if preview==True:
         values =  np.loadtxt("points_values.csv", delimiter=",", skiprows=1)
+        unique_points = np.array(values[:,:3])
         points = np.array(values[:,:3])
         sym_ops = geometry.geometry.readSymmOps()
         points = geometry.geometry.applySymmOps(sym_ops, points)
@@ -293,6 +296,7 @@ def main():
         p = MyPlotter()
         p.subplot(0, 0)
         p.add_points(point_cloud, render_points_as_spheres=True)
+        p.add_points(pv.wrap(pv.PolyData(unique_points)), render_points_as_spheres=True, color="yellow")
         spheres = []
         cylinders = []
         if True:
@@ -304,7 +308,7 @@ def main():
                     color=[0.9, 0.9, 0.9]
                 else:
                     color=[1.0, 0.0, 0.0]
-                spheres.append(mesh_sphere)
+                spheres.append([mesh_sphere,color])
             molecularGraph = graph_theory.detect_cycle.MolecularGraph(geomfile)
             for e in molecularGraph.getEdges():
                 idx1 = e.GetBeginAtomIdx()
@@ -320,9 +324,9 @@ def main():
                 cylinders.append(mesh_cylinder)
 #
         for sphere in spheres:
-            p.add_mesh(sphere, color="tan", show_edges=False)
+            p.add_mesh(sphere[0], color=sphere[1], show_edges=False)
         for cyl in cylinders:
-            p.add_mesh(cyl, color="tan", show_edges=False)
+            p.add_mesh(cyl, color=[0.4, 0.4, 0.4], show_edges=False)
         p.show()
 
 if __name__ == "__main__":
