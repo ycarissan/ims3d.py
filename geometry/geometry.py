@@ -193,6 +193,11 @@ def get_rotation_vector_to_align_along_z(geom_sym):
 #    rot = pymatgen.transformations.standard_transformations.RotationTransformation(rotation_axis, rotation_angle, angle_in_radians=True)
     return rotation_vector
 
+def applySymmOps(sym_ops, points):
+    for op in sym_ops:
+        pts = op.operate_multi(points[:])
+        points = np.concatenate([points, pts], axis=0)
+    return points
 
 def main():
     geom = Geometry("methane.xyz")
