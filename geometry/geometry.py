@@ -1,5 +1,7 @@
 import sys
 import random
+import pickle
+from tqdm import tqdm
 
 try :
     import numpy as np
@@ -198,6 +200,22 @@ def applySymmOps(sym_ops, points):
         pts = op.operate_multi(points[:])
         points = np.concatenate([points, pts], axis=0)
     return points
+
+def applySymmOps_onGrid(sym_ops, grid):
+    for op in sym_ops:
+        for i in tqdm(range(len(grid))):
+            pt = grid[i]
+            coords = np.array([pt["x"], pt["y"], pt["z"]])
+            val=pt['ims']
+            newcoords = op.operate(coords)
+            grid.append({'label': 'Bq', 'x': newcoords[0], 'y': newcoords[1], 'z': newcoords[2], 'ims': val})
+    return grid
+
+def readSymmOps():
+    with open("symmetry_operations.bin","rb") as fio:
+        sym_ops = pickle.load(fio)
+        fio.close()
+    return sym_ops
 
 def main():
     geom = Geometry("methane.xyz")
