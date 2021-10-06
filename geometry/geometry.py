@@ -193,6 +193,7 @@ def get_rotation_vector_to_align_along_z(geom_sym):
 #    rot = pymatgen.transformations.standard_transformations.RotationTransformation(rotation_axis, rotation_angle, angle_in_radians=True)
     return rotation_vector
 
+
 def main():
     geom = Geometry("methane.xyz")
     geom.writePymatgenMoleculeSymmetryUnique("meth.xyz")

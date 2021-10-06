@@ -54,6 +54,16 @@ class geodesic_grid:
 Triangle = namedtuple("Triangle", "a,b,c")
 Point = namedtuple("Point", "x,y,z")
 
+def get_dict_classifier(grid):
+    dict_grid={}
+    for pt in tqdm(grid):
+        norm = np.linalg.norm(pt)
+        norm = "{:.5f}".format(norm)
+        if not (norm in dict_grid.keys()):
+            dict_grid[norm]=[]
+        dict_grid[norm].append(pt)
+    return dict_grid
+
 def normalize(p):
     s = sum(u*u for u in p) ** 0.5
     return Point(*(u/s for u in p))
@@ -264,14 +274,14 @@ def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
         radius = geodesic_grid.vdw_radii[atom['label']]
         geodesic_points = get_geode_points(geodesic_grid.depth)
         geodesic_points = np.unique(geodesic_points.round(decimals=8),axis=0)
-        for pt in tqdm(geodesic_points):
+        for pt in geodesic_points:
             #
             # Compute the distance between the point and the current atom
             #
             point = at.copy()
-            point[0] = point[0] + pt[0]*radius #translate point coordiantes to the atomic repere
-            point[1] = point[1] + pt[1]*radius #translate point coordiantes to the atomic repere
-            point[2] = point[2] + pt[2]*radius #translate point coordiantes to the atomic repere
+            point[0] = point[0] + pt[0]*radius #translate point coordinates to the atomic repere
+            point[1] = point[1] + pt[1]*radius #translate point coordinates to the atomic repere
+            point[2] = point[2] + pt[2]*radius #translate point coordinates to the atomic repere
             addAtom = True
             for other_atom in geom.atoms+geom.spherecenters+geom.pseudoatoms:
                 #
@@ -279,9 +289,13 @@ def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
                 #
                 same_atom = False 
                 other_at = np.array([ other_atom['x'], other_atom['y'], other_atom['z'] ])
-                dist_at_other_at = np.linalg.norm(np.array( [ at[i] - other_at[i] for i in range(3)] ) )
-                if dist_at_other_at < 1e-6:
+                thrs=0.001
+                if (np.abs(at[0]-other_at[0]) < thrs) and (np.abs(at[1]-other_at[1]) < thrs) and (np.abs(at[2]-other_at[2]) < thrs):
                     same_atom = True
+
+                #dist_at_other_at = np.linalg.norm(np.array( [ at[i] - other_at[i] for i in range(3)] ) )
+                #if dist_at_other_at < 1e-6:
+                #    same_atom = True
                 if not(same_atom):
                     #
                     # Compute the distance between the point and the other atom
@@ -300,6 +314,9 @@ def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
             if addAtom and symmetry and len(symmetry_operations)>1:
                 for op in symmetry_operations:
                     for i in range(len(grid)):
+                        if np.linalg.norm(grid[i]) != np.linalg.norm(point):
+                            addAtom = False
+                            break
                         if op.are_symmetrically_related(grid[i], point):
                             addAtom = False
                             break

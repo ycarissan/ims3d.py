@@ -241,18 +241,30 @@ def main():
         geodesic_grid     = grids.geode.geodesic_grid(ignoreH = ignoreH, depth = depth, radius_all = radius_all)
         geodesic_grid_sym = grids.geode.geodesic_grid(ignoreH = ignoreH, depth = depth, radius_all = radius_all)
 
-        grid     = grids.geode.generate_geodesic_grid(geom, geodesic_grid,     logger, symmetry=True)
+        print("Full grid generation")
+        grid     = grids.geode.generate_geodesic_grid(geom, geodesic_grid,     logger, symmetry=False)
+        print("Reduced grid generation")
         grid_sym = grids.geode.generate_geodesic_grid(geom_sym, geodesic_grid_sym, logger)
+
+        print("Classifying full grid")
+        dict_grid     = grids.geode.get_dict_classifier(grid)
+        print("Classifying sym  grid")
+        dict_grid_sym = grids.geode.get_dict_classifier(grid_sym)
 
         grid_todo=[]
         grid_tmp=[]
         thrs=0.01
-        for pt_sym in tqdm(grid_sym):
-            for pt in grid:
-                pt_sym = np.array(pt_sym)
-                pt     = np.array(pt)
-                if (np.abs(pt[0]-pt_sym[0]) < thrs) and (np.abs(pt[1]-pt_sym[1]) < thrs) and (np.abs(pt[2]-pt_sym[2]) < thrs):
-                    grid_tmp.append(pt_sym)
+        print("Full grid reduction")
+        print("len dict    : {}".format(len(dict_grid)))
+        print("len dict sym: {}".format(len(dict_grid_sym)))
+        for ksym in tqdm(dict_grid_sym.keys()):
+            if ksym in dict_grid.keys():
+                for pt_sym in dict_grid_sym[ksym]:
+                    for pt in dict_grid[ksym]:
+                        pt_sym = np.array(pt_sym)
+                        pt     = np.array(pt)
+                        if (np.abs(pt[0]-pt_sym[0]) < thrs) and (np.abs(pt[1]-pt_sym[1]) < thrs) and (np.abs(pt[2]-pt_sym[2]) < thrs):
+                            grid_tmp.append(pt_sym)
 
         pga = geom.getPGA()
         print("Group                   : {}".format(pga.sch_symbol))
@@ -263,7 +275,7 @@ def main():
         grid_todo = grid_tmp
         print("Length of actual   grid : {}".format(len(grid_todo)))
 
-        grids.geode.writegrid(grid_todo, symmetry_operations)
+        grids.geode.writegrid(grid_todo)
     interface.gaussian.generate_gaussianFile(geom, grid_todo, logger, maxbq = maxbq)
 
     if preview==True:
