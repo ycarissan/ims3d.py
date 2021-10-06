@@ -311,10 +311,12 @@ def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
                     if (dist_point_other_at < other_radius):
                         addAtom = False
 
+            thrs=0.000001
+
             if addAtom and symmetry and len(symmetry_operations)>1:
                 for op in symmetry_operations:
                     for i in range(len(grid)):
-                        if np.linalg.norm(grid[i]) != np.linalg.norm(point):
+                        if (np.linalg.norm(grid[i]) - np.linalg.norm(point) )< thrs:
                             addAtom = False
                             break
                         if op.are_symmetrically_related(grid[i], point):
