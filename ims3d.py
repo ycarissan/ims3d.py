@@ -3,6 +3,7 @@ import sys
 import argparse
 import logging
 import numpy as np
+import pickle
 
 import geometry.geometry
 import graph_theory.detect_cycle
@@ -276,11 +277,18 @@ def main():
         print("Length of actual   grid : {}".format(len(grid_todo)))
 
         grids.geode.writegrid(grid_todo)
+        with open("symmetry_operations.bin","wb") as fio:
+            pickle.dump(pga.get_symmetry_operations(), fio)
+            fio.close()
     interface.gaussian.generate_gaussianFile(geom, grid_todo, logger, maxbq = maxbq)
 
     if preview==True:
         values =  np.loadtxt("points_values.csv", delimiter=",", skiprows=1)
-        points = values[:,:3]
+        points = np.array(values[:,:3])
+        with open("symmetry_operations.bin","rb") as fio:
+            sym_ops = pickle.load(fio)
+            fio.close()
+        points = geometry.geometry.applySymmOps(sym_ops, points)
         points = pv.pyvista_ndarray(points)
         point_cloud = pv.PolyData(points)
         cloud = pv.wrap(point_cloud)
