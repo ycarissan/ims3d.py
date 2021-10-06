@@ -5,6 +5,7 @@ import os
 import glob
 import argparse
 import logging
+import geometry.geometry
 
 import grids.angular
 
@@ -163,13 +164,14 @@ def main():
             logger.info("geometry and ".format())
         ims_grid.extend(ims_grid_tmp)
         logger.info("IMS values")
+    sym_ops = geometry.geometry.readSymmOps()
+    ims_grid = geometry.geometry.applySymmOps_onGrid(sym_ops, ims_grid)
     if geode:
         store_data(geom, ims_grid)
     else:
         grid, normals = grids.angular.readgrid()
         grids.angular.addNormals(ims_grid, grid, normals)
         store_data(geom, ims_grid, geode=False)
-
 
 if __name__ == "__main__":
     main()
