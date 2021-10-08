@@ -1,5 +1,7 @@
 __Last update Oct. 08th 2021__
 
+Detail of updates [here](update_notes.md)
+
 # Read before use
 This program is the fruit of a scientific collaboration of the consortium [Twistar](https://twistar.home.blog/).
 
