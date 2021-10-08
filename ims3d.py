@@ -164,6 +164,12 @@ def main():
         help='Auto detect cycles of max size: %(default)s',
         default=7)
     parser.add_argument(
+        '-f',
+        '--format',
+        choices=['com', 'dal'],
+        help='output format: %(default)s',
+        default="com")
+    parser.add_argument(
         'geomfile',
         type=str,
         help="Geometry file in xyz format. default: %(default)s",
@@ -186,6 +192,7 @@ def main():
     angular = args.angular
     depth = args.depth
     maxbq = args.batch
+    output_format = args.format
     cycle_max_size = args.cycle_max_size
     #
     # Read the geometry in the geom file
@@ -281,8 +288,10 @@ def main():
         with open("symmetry_operations.bin","wb") as fio:
             pickle.dump(pga.get_symmetry_operations(), fio)
             fio.close()
-    interface.gaussian.generate_gaussianFile(geom, grid_todo, logger, maxbq = maxbq)
-    interface.dalton.generate_daltonFile(geom, grid_todo, logger, maxbq = 50)
+    if output_format=="com":
+        interface.gaussian.generate_gaussianFile(geom, grid_todo, logger, maxbq = maxbq)
+    elif output_format=="dal":
+        interface.dalton.generate_daltonFile(geom, grid_todo, logger, maxbq = 50)
 
     if preview==True:
         values =  np.loadtxt("points_values.csv", delimiter=",", skiprows=1)
