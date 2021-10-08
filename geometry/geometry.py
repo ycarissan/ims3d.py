@@ -175,8 +175,8 @@ def atoms2Molecule(atoms):
     for pt in atoms:
         labels.append(pt["label"])
         coords.append([pt["x"], pt["y"], pt["z"]])
-    print(labels)
-    print(coords)
+#    print(labels)
+#    print(coords)
     molecule = pymatgen.core.Molecule(labels, coords)
     return molecule
 

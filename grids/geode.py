@@ -54,14 +54,20 @@ class geodesic_grid:
 Triangle = namedtuple("Triangle", "a,b,c")
 Point = namedtuple("Point", "x,y,z")
 
+def get_dict_classifier_key(pt):
+    norm = np.linalg.norm(pt)
+    norm = "{:.5f}".format(norm)
+    return norm
+
 def get_dict_classifier(grid):
     dict_grid={}
-    for pt in tqdm(grid):
-        norm = np.linalg.norm(pt)
-        norm = "{:.5f}".format(norm)
+#    print("Classifier generation")
+    for pt in grid:
+        norm = get_dict_classifier_key(pt)
         if not (norm in dict_grid.keys()):
             dict_grid[norm]=[]
         dict_grid[norm].append(pt)
+#    print("Done")
     return dict_grid
 
 def normalize(p):
@@ -274,7 +280,9 @@ def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
         radius = geodesic_grid.vdw_radii[atom['label']]
         geodesic_points = get_geode_points(geodesic_grid.depth)
         geodesic_points = np.unique(geodesic_points.round(decimals=8),axis=0)
-        for pt in geodesic_points:
+        tmpgrid=[]
+        for i in range(len(geodesic_points)):
+            pt=geodesic_points[i]
             #
             # Compute the distance between the point and the current atom
             #
@@ -282,48 +290,60 @@ def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
             point[0] = point[0] + pt[0]*radius #translate point coordinates to the atomic repere
             point[1] = point[1] + pt[1]*radius #translate point coordinates to the atomic repere
             point[2] = point[2] + pt[2]*radius #translate point coordinates to the atomic repere
+            tmpgrid.append(point)
+        dict_geode = get_dict_classifier(tmpgrid)
+
+#        print("Check symmetry")
+        generated_by_symmetry=[]
+        if symmetry:
+            for i in range(len(tmpgrid)):
+                point=tmpgrid[i]
+                k=get_dict_classifier_key(point)
+                for j in range(i+1,len(tmpgrid)):
+                    if not j in generated_by_symmetry:
+                        ptB=tmpgrid[j]
+                        if get_dict_classifier_key(ptB)==k:
+                            for op in symmetry_operations:
+                                if op.are_symmetrically_related(point, ptB):
+                                    generated_by_symmetry.append(j)
+                                    break
+#        print("Done")
+
+        for i in range(len(tmpgrid)):
             addAtom = True
-            for other_atom in geom.atoms+geom.spherecenters+geom.pseudoatoms:
-                #
-                # Check that we are looping over other atoms only (not the current one)
-                #
-                same_atom = False 
-                other_at = np.array([ other_atom['x'], other_atom['y'], other_atom['z'] ])
-                thrs=0.001
-                if (np.abs(at[0]-other_at[0]) < thrs) and (np.abs(at[1]-other_at[1]) < thrs) and (np.abs(at[2]-other_at[2]) < thrs):
-                    same_atom = True
+            if symmetry and i in generated_by_symmetry:
+                addAtom = False
+                continue
 
-                #dist_at_other_at = np.linalg.norm(np.array( [ at[i] - other_at[i] for i in range(3)] ) )
-                #if dist_at_other_at < 1e-6:
-                #    same_atom = True
-                if not(same_atom):
+            point=tmpgrid[i]
+            if addAtom:
+                for other_atom in geom.atoms+geom.spherecenters+geom.pseudoatoms:
                     #
-                    # Compute the distance between the point and the other atom
+                    # Check that we are looping over other atoms only (not the current one)
                     #
-                    dist_point_other_at = np.linalg.norm(np.array( [ point[i] - other_at[i] for i in range(3)] ) )
-                    #
-                    # Get the vdw radius of the other atom
-                    #
-                    other_radius = geodesic_grid.vdw_radii[other_atom['label']]
-                    #
-                    # if the point is within the vdw radius of the other atom, skip it
-                    #
-                    if (dist_point_other_at < other_radius):
-                        addAtom = False
+                    same_atom = False 
+                    other_at = np.array([ other_atom['x'], other_atom['y'], other_atom['z'] ])
+                    thrs=0.001
+                    if (np.abs(at[0]-other_at[0]) < thrs) and (np.abs(at[1]-other_at[1]) < thrs) and (np.abs(at[2]-other_at[2]) < thrs):
+                        same_atom = True
 
-            thrs=0.000001
-
-            if addAtom and symmetry and len(symmetry_operations)>1:
-                for op in symmetry_operations:
-                    for i in range(len(grid)):
-                        if (np.linalg.norm(grid[i]) - np.linalg.norm(point) )< thrs:
+                    #dist_at_other_at = np.linalg.norm(np.array( [ at[i] - other_at[i] for i in range(3)] ) )
+                    #if dist_at_other_at < 1e-6:
+                    #    same_atom = True
+                    if not(same_atom):
+                        #
+                        # Compute the distance between the point and the other atom
+                        #
+                        dist_point_other_at = np.linalg.norm(np.array( [ point[i] - other_at[i] for i in range(3)] ) )
+                        #
+                        # Get the vdw radius of the other atom
+                        #
+                        other_radius = geodesic_grid.vdw_radii[other_atom['label']]
+                        #
+                        # if the point is within the vdw radius of the other atom, skip it
+                        #
+                        if (dist_point_other_at < other_radius):
                             addAtom = False
-                            break
-                        if op.are_symmetrically_related(grid[i], point):
-                            addAtom = False
-                            break
-                    if not addAtom:
-                        break
 
             if addAtom:
                 logger.debug(

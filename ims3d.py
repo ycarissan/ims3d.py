@@ -244,7 +244,7 @@ def main():
         geodesic_grid_sym = grids.geode.geodesic_grid(ignoreH = ignoreH, depth = depth, radius_all = radius_all)
 
         print("Full grid generation")
-        grid     = grids.geode.generate_geodesic_grid(geom, geodesic_grid,     logger, symmetry=False)
+        grid     = grids.geode.generate_geodesic_grid(geom, geodesic_grid,     logger, symmetry=True)
         print("Reduced grid generation")
         grid_sym = grids.geode.generate_geodesic_grid(geom_sym, geodesic_grid_sym, logger)
 
@@ -255,7 +255,7 @@ def main():
 
         grid_todo=[]
         grid_tmp=[]
-        thrs=0.01
+        thrs=0.1
         print("Full grid reduction")
         print("len dict    : {}".format(len(dict_grid)))
         print("len dict sym: {}".format(len(dict_grid_sym)))
