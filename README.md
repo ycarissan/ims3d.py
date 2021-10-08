@@ -69,11 +69,8 @@ Read the tutorial [here](https://github.com/ycarissan/ims3d.py/blob/master/tutor
 ## ims3d.py
 
 ```
-$ python3 ${IMS3D_PATH}/ims3d.py -h
-
-usage: ims3d.py [-h] [-v] [-d] [-r RADIUS] [-n NPTS] [--batch BATCH] [--depth DEPTH] [-o] [-i] [-p] [-a]
-                [-c CYCLE_MAX_SIZE]
-                geomfile
+$ python3 ./ims3d.py -h
+usage: ims3d.py [-h] [-v] [-d] [-r RADIUS] [-n NPTS] [--batch BATCH] [--depth DEPTH] [-o] [-i] [-p] [-a] [-c CYCLE_MAX_SIZE] [-f {com,dal}] geomfile
 
 Generate gaussian inputs for IMS calculations.
 
@@ -85,7 +82,7 @@ optional arguments:
   -v, --verbose         More info
   -d, --debug           Debug info
   -r RADIUS, --radius RADIUS
-                        Set the radius to the specified value angstrom
+                        Set the radius to 1 angstrom
   -n NPTS, --npts NPTS  Number of angular points by half circle. default: 12
   --batch BATCH, -b BATCH
                         Change the number of bq per batch. default: infinity
@@ -96,4 +93,9 @@ optional arguments:
   -a, --angular         Activate the deprecated angular grid
   -c CYCLE_MAX_SIZE, --cycle-max-size CYCLE_MAX_SIZE
                         Auto detect cycles of max size: 7
+  -f {com,dal}, --format {com,dal}
+                        output format: com
+
+Make sure you use the python3 interpreter that comes with the conda environment. If this sentence makes no sense and you get error messages for missing librairies, please read the documentation.
+
 ```
