@@ -7,7 +7,6 @@ import matplotlib.tri as mtri
 from geometry.geometry import dummyElementLabel
 
 from tqdm import tqdm
-import simplejson as json
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
