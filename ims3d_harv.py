@@ -35,6 +35,33 @@ logger.addHandler(fh)
 
 
 
+def readdalfile(logfile):
+    """
+    Read a dalton output file and store the geometry and the ims values (if any)
+    """
+    f = open(logfile, "r")
+    store_geom = False
+    store_ims = False
+    index = 0
+    geom = []
+    ims_grid = []
+    for l in f.readlines():
+        if ("Molecular geometry (au)" in l):
+            store_geom = True
+        if store_geom:
+            if len(l)>1:
+                atmp = l.split()
+                geom.append({'label': str(atmp[0]),
+                    'x': float(atmp[2])/.529177210,
+                    'y': float(atmp[3])/.529177210,
+                    'z': float(atmp[4])/.529177210
+                    })
+        if ("@2" in l):
+            atmp = l.split()
+            if len(atmp)==10:
+                geom[index]['ims'] = float(atmp[3])
+            index = index + 1
+
 def readlogfile(logfile):
     """
     Read a guassian output file and store the geometry and the ims values (if any)
@@ -63,6 +90,7 @@ def readlogfile(logfile):
             atmp = l.split()
             geom[index]['ims'] = float(atmp[4])
             index = index + 1
+
     # split data into two sparate lists
     # as one will process many log files and want only 1 geometry but the full
     # ims grid
@@ -74,7 +102,6 @@ def readlogfile(logfile):
         else:
             geom.append(el)
     return geom, ims_grid
-
 
 def store_data(geom, ims_grid, geode=True):
     geom_file = "geom.xyz"
@@ -123,6 +150,12 @@ def main():
         default="30",
         help='Number of grid points in all 3 directions. default: %(default)s')
     parser.add_argument(
+        '-f',
+        '--format',
+        choices=['com', 'dal'],
+        help='output format: %(default)s',
+        default="com")
+    parser.add_argument(
         'logfile',
         type=str,
         default="input_cycle_01_batch_01.log",
@@ -130,6 +163,7 @@ def main():
     args = parser.parse_args()
     logfile = args.logfile
     npts = args.npts
+    output_format = args.format
     geode = not(args.angular)
     radical = re.sub(r'_cycle_\d*_batch_\d*.log$', '', os.path.basename(logfile))
     radical = re.sub(r'_batch_\d*.log$', '', os.path.basename(logfile))
@@ -158,7 +192,10 @@ def main():
     ims_grid = []
     for f in logfiles:
         logger.info("Extracting from {0:s} ".format(f))
-        geom_tmp, ims_grid_tmp = readlogfile(f)
+        if output_format=="com":
+            geom_tmp, ims_grid_tmp = readlogfile(f)
+        else:
+            geom_tmp, ims_grid_tmp = readdalfile(f)
         if len(geom) == 0:
             geom = geom_tmp
             logger.info("geometry and ".format())
