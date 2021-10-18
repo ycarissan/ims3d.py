@@ -44,23 +44,39 @@ def readdalfile(logfile):
     store_ims = False
     index = 0
     geom = []
-    ims_grid = []
     for l in f.readlines():
+        if store_geom:
+            if countdown>0:
+                countdown -= 1
+            elif len(l)>1:
+                atmp = l.split()
+                if (len(atmp)==5):
+                    geom.append({'label': str(atmp[0]),
+                        'x': float(atmp[2])*.529177210,
+                        'y': float(atmp[3])*.529177210,
+                        'z': float(atmp[4])*.529177210
+                        })
+                else:
+                    geom.append({'label': str(atmp[0]),
+                        'x': float(atmp[1])*.529177210,
+                        'y': float(atmp[2])*.529177210,
+                        'z': float(atmp[3])*.529177210
+                        })
+            else:
+                store_geom=False
         if ("Molecular geometry (au)" in l):
             store_geom = True
-        if store_geom:
-            if len(l)>1:
-                atmp = l.split()
-                geom.append({'label': str(atmp[0]),
-                    'x': float(atmp[2])/.529177210,
-                    'y': float(atmp[3])/.529177210,
-                    'z': float(atmp[4])/.529177210
-                    })
+            countdown=2
         if ("@2" in l):
             atmp = l.split()
-            if len(atmp)==10:
-                geom[index]['ims'] = float(atmp[3])
-            index = index + 1
+            if not "shielding" in l:
+                if len(atmp)==10:
+                    geom[index]['ims'] = float(atmp[3])
+                    index = index + 1
+                elif len(atmp)==9:
+                    geom[index]['ims'] = float(atmp[2])
+                    index = index + 1
+    return split_geom_and_grid(geom)
 
 def readlogfile(logfile):
     """
@@ -71,7 +87,6 @@ def readlogfile(logfile):
     store_ims = False
     index = 0
     geom = []
-    ims_grid = []
     for l in f.readlines():
         if (("Charge" in l) and ("Multiplicity" in l)):
             store_geom = True
@@ -90,11 +105,14 @@ def readlogfile(logfile):
             atmp = l.split()
             geom[index]['ims'] = float(atmp[4])
             index = index + 1
+    return split_geom_and_grid(geom)
 
+def split_geom_and_grid(geom):
     # split data into two sparate lists
     # as one will process many log files and want only 1 geometry but the full
     # ims grid
     g = geom
+    ims_grid = []
     geom = []
     for el in g:
         if "Bq" in el['label']:  # it is a bq atom -> ims grid
@@ -165,8 +183,12 @@ def main():
     npts = args.npts
     output_format = args.format
     geode = not(args.angular)
-    radical = re.sub(r'_cycle_\d*_batch_\d*.log$', '', os.path.basename(logfile))
-    radical = re.sub(r'_batch_\d*.log$', '', os.path.basename(logfile))
+    if output_format=="com":
+        radical = re.sub(r'_cycle_\d*_batch_\d*.log$', '', os.path.basename(logfile))
+        radical = re.sub(r'_batch_\d*.log$', '', os.path.basename(logfile))
+    else:
+        radical = re.sub(r'_cycle_\d*_batch_\d*.out$', '', os.path.basename(logfile))
+        radical = re.sub(r'_batch_\d*.out$', '', os.path.basename(logfile))
     dirname = os.path.dirname(logfile)
     if len(dirname)==0:
         dirname="."
@@ -179,13 +201,20 @@ def main():
 # Read the geometry stored in geom for all radical_###.log files
 #  and the data for all these files
 #
-    logfiles = sorted(
-        glob.glob(
-            dirname +
-            "/" +
-            radical +
-            "_batch_[0-9]*.log"))
-#            "_cycle_[0-9]*_batch_[0-9]*.log"))
+    if output_format=="com":
+        logfiles = sorted(
+                glob.glob(
+                    dirname +
+                    "/" +
+                    radical +
+                    "_batch_[0-9]*.log"))
+    else:
+        logfiles = sorted(
+                glob.glob(
+                    dirname +
+                    "/" +
+                    radical +
+                    "_batch_[0-9]*.out"))
     logger.debug("dirname : {}\nradical : {}\n".format(dirname, radical))
     logger.debug("logfiles: {} ...".format(logfiles))
     geom = []
