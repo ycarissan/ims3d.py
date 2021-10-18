@@ -260,7 +260,6 @@ def main():
         print("Classifying sym  grid")
         dict_grid_sym = grids.geode.get_dict_classifier(grid_sym)
 
-        grid_todo=[]
         grid_tmp=[]
         thrs=0.1
         print("Full grid reduction")
@@ -279,7 +278,7 @@ def main():
         print("Group                   : {}".format(pga.sch_symbol))
         print("Length of full     grid : {}".format(len(grid)))
         print("Length of sym only grid : {}".format(len(grid_sym)))
-        print("Length of temp     grid : {}".format(len(grid_tmp)))
+#        print("Length of temp     grid : {}".format(len(grid_tmp)))
         symmetry_operations = pga.get_symmetry_operations()
         grid_todo = grid_tmp
         print("Length of actual   grid : {}".format(len(grid_todo)))
