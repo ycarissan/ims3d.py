@@ -229,13 +229,20 @@ def applySymmOps(sym_ops, points):
     return points
 
 def applySymmOps_onGrid(sym_ops, grid):
+    toadd=[]
     for op in sym_ops:
+        generated=np.array([])
         for i in tqdm(range(len(grid))):
             pt = grid[i]
             coords = np.array([pt["x"], pt["y"], pt["z"]])
             val=pt['ims']
             newcoords = op.operate(coords)
-            grid.append({'label': 'Bq', 'x': newcoords[0], 'y': newcoords[1], 'z': newcoords[2], 'ims': val})
+            if np.linalg.norm(newcoords-pt)>0.0001:
+                generated.append({'label': 'Bq', 'x': newcoords[0], 'y': newcoords[1], 'z': newcoords[2], 'ims': val})
+        if len(generated)>0:
+            toadd.append(generated)
+    for generated in toadd:
+        grid = np.append(grid, generated)
     return grid
 
 def readSymmOps():
