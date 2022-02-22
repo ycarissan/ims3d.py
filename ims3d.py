@@ -303,7 +303,7 @@ def main():
     if output_format=="com":
         interface.gaussian.generate_gaussianFile(geom, grid_todo, logger, maxbq = maxbq)
     elif output_format=="dal":
-        interface.dalton.generate_daltonFile(geom, grid_todo, logger, maxbq = 50)
+        interface.dalton.generate_daltonFile(geom, grid_todo, logger, maxbq = maxbq)
 
     if preview==True:
         values =  np.loadtxt("points_values.csv", delimiter=",", skiprows=1)
