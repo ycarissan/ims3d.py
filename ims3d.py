@@ -172,7 +172,7 @@ def main():
     parser.add_argument(
         '--usesymmetry',
         action='store_true',
-        help="Use symmetry operations (experimental)"
+        help="Use symmetry operations (experimental)",
         default=False)
     parser.add_argument(
         'geomfile',
