@@ -231,7 +231,8 @@ def main():
         ims_grid.extend(ims_grid_tmp)
         logger.info("IMS values")
     sym_ops = geometry.geometry.readSymmOps()
-    ims_grid = geometry.geometry.applySymmOps_onGrid(sym_ops, ims_grid)
+    if not(sym_ops==None):
+        ims_grid = geometry.geometry.applySymmOps_onGrid(sym_ops, ims_grid)
     if geode:
         store_data(geom, ims_grid)
     else:

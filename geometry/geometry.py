@@ -246,10 +246,13 @@ def applySymmOps_onGrid(sym_ops, grid):
     return grid
 
 def readSymmOps():
-    with open("symmetry_operations.bin","rb") as fio:
-        sym_ops = pickle.load(fio)
-        fio.close()
-    return sym_ops
+    try:
+        with open("symmetry_operations.bin","rb") as fio:
+            sym_ops = pickle.load(fio)
+            fio.close()
+            return sym_ops
+    except:
+        return None
 
 def main():
     geom = Geometry("methane.xyz")
