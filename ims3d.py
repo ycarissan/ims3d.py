@@ -111,6 +111,10 @@ def main():
         action='store_true',
         help='Debug info')
     parser.add_argument(
+        '--newgrid',
+        action='store_true',
+        help='Debug info')
+    parser.add_argument(
         '-r',
         '--radius',
         type=float,
@@ -187,6 +191,9 @@ def main():
         fh.setLevel(logging.DEBUG)
     elif(args.verbose):
         logger.setLevel(logging.INFO)
+    newgrid=False
+    if (args.newgrid):
+        newgrid=True
     ignoreH = args.ignoreH
     preview = args.preview
     if preview and (not pyvista or not myplotter):
@@ -258,40 +265,44 @@ def main():
             geodesic_grid_sym = grids.geode.geodesic_grid(ignoreH = ignoreH, depth = depth, radius_all = radius_all)
 
         print("Full grid generation")
-        grid     = grids.geode.generate_geodesic_grid(geom, geodesic_grid,     logger, symmetry=True)
-        if usesymmetry:
-            print("Reduced grid generation")
-            grid_sym = grids.geode.generate_geodesic_grid(geom_sym, geodesic_grid_sym, logger)
-
-        print("Classifying full grid")
-        dict_grid     = grids.geode.get_dict_classifier(grid)
-        if usesymmetry:
-            print("Classifying sym  grid")
-            dict_grid_sym = grids.geode.get_dict_classifier(grid_sym)
-
-        if usesymmetry:
-            grid_tmp=[]
-            thrs=0.1
-            print("Full grid reduction")
-            print("len dict    : {}".format(len(dict_grid)))
-            print("len dict sym: {}".format(len(dict_grid_sym)))
-            for ksym in tqdm(dict_grid_sym.keys()):
-                if ksym in dict_grid.keys():
-                    for pt_sym in dict_grid_sym[ksym]:
-                        for pt in dict_grid[ksym]:
-                            pt_sym = np.array(pt_sym)
-                            pt     = np.array(pt)
-                            if (np.abs(pt[0]-pt_sym[0]) < thrs) and (np.abs(pt[1]-pt_sym[1]) < thrs) and (np.abs(pt[2]-pt_sym[2]) < thrs):
-                                grid_tmp.append(pt_sym)
-
-            pga = geom.getPGA()
-            print("Group                   : {}".format(pga.sch_symbol))
-            print("Length of full     grid : {}".format(len(grid)))
-            print("Length of sym only grid : {}".format(len(grid_sym)))
-#            print("Length of temp     grid : {}".format(len(grid_tmp)))
-            symmetry_operations = pga.get_symmetry_operations()
-        else:
+        if (newgrid):
+            grid     = grids.geode.generate_new_geodesic_grid(geom, geodesic_grid,     logger, symmetry=True)
             grid_tmp = grid
+        else:
+            grid     = grids.geode.generate_geodesic_grid(geom, geodesic_grid,     logger, symmetry=True)
+            if usesymmetry:
+                print("Reduced grid generation")
+                grid_sym = grids.geode.generate_geodesic_grid(geom_sym, geodesic_grid_sym, logger)
+
+            print("Classifying full grid")
+            dict_grid     = grids.geode.get_dict_classifier(grid)
+            if usesymmetry:
+                print("Classifying sym  grid")
+                dict_grid_sym = grids.geode.get_dict_classifier(grid_sym)
+
+            if usesymmetry:
+                grid_tmp=[]
+                thrs=0.1
+                print("Full grid reduction")
+                print("len dict    : {}".format(len(dict_grid)))
+                print("len dict sym: {}".format(len(dict_grid_sym)))
+                for ksym in tqdm(dict_grid_sym.keys()):
+                    if ksym in dict_grid.keys():
+                        for pt_sym in dict_grid_sym[ksym]:
+                            for pt in dict_grid[ksym]:
+                                pt_sym = np.array(pt_sym)
+                                pt     = np.array(pt)
+                                if (np.abs(pt[0]-pt_sym[0]) < thrs) and (np.abs(pt[1]-pt_sym[1]) < thrs) and (np.abs(pt[2]-pt_sym[2]) < thrs):
+                                    grid_tmp.append(pt_sym)
+
+                pga = geom.getPGA()
+                print("Group                   : {}".format(pga.sch_symbol))
+                print("Length of full     grid : {}".format(len(grid)))
+                print("Length of sym only grid : {}".format(len(grid_sym)))
+#                print("Length of temp     grid : {}".format(len(grid_tmp)))
+                symmetry_operations = pga.get_symmetry_operations()
+            else:
+                grid_tmp = grid
         grid_todo = grid_tmp
         print("Length of actual   grid : {}".format(len(grid_todo)))
 
