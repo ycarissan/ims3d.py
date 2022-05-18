@@ -5,6 +5,7 @@ Thanks to Eugene Eeo
 import numpy as np
 import matplotlib.tri as mtri
 from geometry.geometry import dummyElementLabel
+import pyvista
 
 from tqdm import tqdm
 
@@ -268,6 +269,48 @@ def get_geode_points(depth=2, method=None):
     for x, y, z in zip(X, Y, Z):
         points.append([x, y, z])
     return np.asarray(points)
+
+def generate_new_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
+    grid = []
+    pl = pyvista.Plotter()
+    complete_surface = None
+    for atom in tqdm(geom.atoms+geom.spherecenters+geom.pseudoatoms):
+        at    = np.array([ atom['x'], atom['y'], atom['z'] ])
+        radius = geodesic_grid.vdw_radii[atom['label']]
+        geodesic_points = get_geode_points(geodesic_grid.depth)
+        geode_points = []
+        for i in range(len(geodesic_points)):
+            pt=geodesic_points[i]
+            #
+            # Compute the distance between the point and the current atom
+            #
+            point = at.copy()
+            point[0] = point[0] + pt[0]*radius #translate point coordinates to the atomic repere
+            point[1] = point[1] + pt[1]*radius #translate point coordinates to the atomic repere
+            point[2] = point[2] + pt[2]*radius #translate point coordinates to the atomic repere
+            geode_points.append(point)
+        points_pv = pyvista.wrap(np.array(geode_points))
+        surf = points_pv.reconstruct_surface()
+        if complete_surface==None:
+            complete_surface = surf
+        else:
+            complete_surface = complete_surface.merge(surf)
+#        pl.add_mesh(surf, color=True, show_edges=True)
+    idx_list=[]
+    for atom in tqdm(geom.atoms+geom.spherecenters+geom.pseudoatoms):
+        at    = np.array([ atom['x'], atom['y'], atom['z'] ])
+        radius = geodesic_grid.vdw_radii[atom['label']]
+        for i in tqdm(range(complete_surface.number_of_points)):
+            pt = complete_surface.points[i]
+            if np.linalg.norm(at-pt)<=0.99*radius:
+                idx_list.append(i)
+    surface, _ = complete_surface.remove_points(idx_list)
+    final_mesh = surface.reconstruct_surface()
+
+    pl.add_mesh(surface, style='wireframe')
+    pl.add_title('Reconstructed Surface')
+    pl.show()
+    return surface.points
 
 def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
     grid = []
