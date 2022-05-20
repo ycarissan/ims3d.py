@@ -258,7 +258,7 @@ def main():
             geodesic_grid_sym = grids.geode.geodesic_grid(ignoreH = ignoreH, depth = depth, radius_all = radius_all)
 
         print("Full grid generation")
-        grid     = grids.geode.generate_geodesic_grid(geom, geodesic_grid,     logger, symmetry=True)
+        grid     = grids.geode.generate_geodesic_grid(geom, geodesic_grid,     logger, symmetry=False)
         if usesymmetry:
             print("Reduced grid generation")
             grid_sym = grids.geode.generate_geodesic_grid(geom_sym, geodesic_grid_sym, logger)
