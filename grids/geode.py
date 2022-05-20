@@ -16,6 +16,12 @@ if __name__ == '__main__':
 
 from collections import namedtuple
 
+try:
+    from numba import jit
+except ModuleNotFoundError as error:
+    print("Module numba not found: the conda environment needs update.\nRunnig the following command will fix the problem:\n\nconda env update --file ${IMS3D_HOME}/conda/ims3d_conda_env.yml --prune\n")
+    quit()
+
 class geodesic_grid:
     vdw_radii_standard = {
             dummyElementLabel: 1.0,
@@ -53,8 +59,12 @@ class geodesic_grid:
 Triangle = namedtuple("Triangle", "a,b,c")
 Point = namedtuple("Point", "x,y,z")
 
+@jit(nopython=True, cache=True)
+def optimized_norm(pt):
+    return np.linalg.norm(pt)
+
 def get_dict_classifier_key(pt):
-    norm = np.linalg.norm(pt)
+    norm = optimized_norm(pt)
     norm = "{:.5f}".format(norm)
     return norm
 
@@ -333,7 +343,7 @@ def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
                         #
                         # Compute the distance between the point and the other atom
                         #
-                        dist_point_other_at = np.linalg.norm(np.array( [ point[i] - other_at[i] for i in range(3)] ) )
+                        dist_point_other_at = optimized_norm(np.array( [ point[i] - other_at[i] for i in range(3)] ) )
                         #
                         # Get the vdw radius of the other atom
                         #
