@@ -99,3 +99,4 @@ optional arguments:
 Make sure you use the python3 interpreter that comes with the conda environment. If this sentence makes no sense and you get error messages for missing librairies, please read the documentation.
 
 ```
+![Alt text](img/diff.gif)
