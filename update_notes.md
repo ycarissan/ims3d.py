@@ -1,7 +1,7 @@
 __May  20th 2022__
 * Implement the fast norm calculation with numba: thie requires an update of the conda environment:
 ```
-conda env update --file ${IMS3D_HOME}/ims3d_conda_env.yml --prune
+conda env update --file ${IMS3D_PATH}/ims3d_conda_env.yml --prune
 ```
 
 __Oct. 08th 2021__
