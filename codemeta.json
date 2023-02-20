@@ -1,0 +1,77 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "license": "https://spdx.org/licenses/MIT",
+    "codeRepository": "git+https://github.com/ycarissan/ims3d.py.git",
+    "dateCreated": "2019-09-26",
+    "name": "ims3d",
+    "description": "Suite of programs to generate quantum chemistry program inputs to compute IMS maps, gather results of the user performed calculations and preview the results.",
+    "applicationCategory": "Chemistry",
+    "developmentStatus": "active",
+    "isPartOf": "http://twistar.home.blog/",
+    "referencePublication": "https://doi.org/10.1039/D1SC03368A",
+    "keywords": [
+        "aromaticity",
+        "IMS"
+    ],
+    "programmingLanguage": [
+        "Python 3"
+    ],
+    "operatingSystem": [
+        "Linux",
+        "MacOS",
+        "Windows"
+    ],
+    "softwareRequirements": [
+        "Python 3",
+        "Conda"
+    ],
+    "author": [
+        {
+            "@type": "Person",
+            "@id": "https://orcid.org/0000-0002-9876-0272",
+            "givenName": "Yannick",
+            "familyName": "Carissan",
+            "email": "yannick.carissan@univ-amu.fr",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Aix Marseille Univ, CNRS Centrale Marseille, iSm2, Marseille (France)"
+            }
+        }
+    ],
+    "contributor": [
+        {
+            "@type": "Person",
+            "@id": "https://orcid.org/0000-0003-0646-006X",
+            "givenName": "Yoann",
+            "familyName": "Coquerel",
+            "email": "yoann.coquerel@univ-amu.fr",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Aix Marseille Univ, CNRS Centrale Marseille, iSm2, Marseille (France)"
+            }
+        },
+        {
+            "@type": "Person",
+            "@id": "https://orcid.org/0000-0001-8761-1047",
+            "givenName": "Hagebaul-Reignier",
+            "familyName": "Denis",
+            "email": "denis.hagebaulm-reignier@univ-amu.Fr",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Aix Marseille Univ, CNRS Centrale Marseille, iSm2, Marseille (France)"
+            }
+        },
+        {
+            "@type": "Person",
+            "@id": "https://orcid.org/0000-0002-7351-0066",
+            "givenName": "Albert",
+            "familyName": "Artigas",
+            "email": "albert.artigas-ruf@univ-amu.Fr",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Aix Marseille Univ, CNRS Centrale Marseille, iSm2, Marseille (France)"
+            }
+        }
+    ]
+}
