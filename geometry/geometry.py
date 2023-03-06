@@ -40,7 +40,7 @@ class Geometry:
 
         for l in lines[2:]:
             a = l.split()
-            lbl = a[0].strip().upper()
+            lbl = a[0].strip().capitalize()
             position = [float(a[1]), float(a[2]), float(a[3])]
             if lbl=="BQ" or lbl=="X" or lbl=="XX":
                 print("BQ found")
