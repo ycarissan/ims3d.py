@@ -38,15 +38,21 @@ class Geometry:
         self.spherecenters = []
         self.pga = None
 
+        iline = 0
         for l in lines[2:]:
-            a = l.split()
-            lbl = a[0].strip().capitalize()
-            position = [float(a[1]), float(a[2]), float(a[3])]
-            if lbl=="BQ" or lbl=="X" or lbl=="XX":
-                print("BQ found")
-                self.spherecenters.append( { 'label': dummyElementLabel, 'x': position[0], 'y': position[1], 'z': position[2] } )
-            else:
-                self.atoms.append( { 'label': lbl, 'x': position[0], 'y': position[1], 'z': position[2] } )
+            iline = iline + 1
+            try:
+                a = l.split()
+                lbl = a[0].strip().capitalize()
+                position = [float(a[1]), float(a[2]), float(a[3])]
+                if lbl=="BQ" or lbl=="X" or lbl=="XX":
+                    print("BQ found")
+                    self.spherecenters.append( { 'label': dummyElementLabel, 'x': position[0], 'y': position[1], 'z': position[2] } )
+                else:
+                    self.atoms.append( { 'label': lbl, 'x': position[0], 'y': position[1], 'z': position[2] } )
+            except:
+                print("Could not parse line #{}\n{}\n".format(iline,l))
+                exit(1)
 
         if orient:
             filename_atoms_only = self.getgeomfilename_Atomsonly()
