@@ -11,7 +11,7 @@ def generate_daltonFile(geom, grid, logger, outdir="./", igrid=0, maxbq=50, all_
         batch.append(grid[len(grid)-remainder:])
     for ibatch in range(len(batch)):
         daltonfile = outdir + \
-                "input_batch_{:05d}.dal".format(ibatch)
+                "input_batch_{:05d}.dal".format(ibatch*maxbq)
         f = open(daltonfile, "w")
         try:
             fhead = open("dalton.head", "r")
