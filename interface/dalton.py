@@ -1,7 +1,6 @@
 import pymatgen
 
 def generate_daltonFile(geom, grid, logger, outdir="./", igrid=0, maxbq=50, all_atoms=None, atomtypes=None):
-    print("doing {}/{}".format(igrid, len(grid)))
     grid_size = len(grid)
     batch=[]
     for i in range(grid_size//maxbq):
@@ -10,6 +9,7 @@ def generate_daltonFile(geom, grid, logger, outdir="./", igrid=0, maxbq=50, all_
     if (remainder!=0):
         batch.append(grid[len(grid)-remainder:])
     for ibatch in range(len(batch)):
+        print("doing {}/{}".format(ibatch*maxbq, len(grid)))
         daltonfile = outdir + \
                 "input_batch_{:05d}.dal".format(ibatch*maxbq)
         f = open(daltonfile, "w")
