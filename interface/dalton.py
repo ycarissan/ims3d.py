@@ -19,7 +19,7 @@ def generate_daltonFile(geom, grid, logger, outdir="./", igrid=0, maxbq=50, all_
                 f.write(l)
         except:
             f.write("please provide a dalton.head file\n")
-        f.write("Charge=0 Atoms={} Basis=pointcharge\n".format(min(len(grid[ibatch:]),maxbq)))
+        f.write("Charge=0 Atoms={} Basis=pointcharge\n".format(min(len(batch[ibatch]),maxbq)))
         for bq in batch[ibatch]:
             f.write(
                 "Bq     {0[0]:16.10f} {0[1]:16.10f} {0[2]:16.10f}\n".format(bq))
