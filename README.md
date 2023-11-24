@@ -1,5 +1,3 @@
-__Last update May. 20th 2022__
-
 Detail of updates [here](update_notes.md)
 
 # Read before use
@@ -14,12 +12,27 @@ A. Artigas, D. Hagebaum-Reignier, Y. Carissan and Y. Coquerel, Chem. Sci., 2021,
 The user is strongly advised to read this publication before using the programs.
 
 # Installation
+## Getting the code
+```
+git clone https://github.com/ycarissan/ims3d.py.git
+```
+
+After this is done, you need to add the directory containing the programs to your PATH:
+
+In bash (replace path_of_the_ims3d.py_file by an appropriate value)
+```
+cd ims3d.py
+export IMS3D_PATH=$PWD
+export PATH=${IMS3D_PATH}:${PATH}
+```
+To make these programs permaneetly available you should add this line to your .bashrc file
+
 ## Requirements
 ### Using Conda
 Install conda : [https://docs.conda.io/projects/conda/en/latest/index.html](https://docs.conda.io/projects/conda/en/latest/index.html)
 Generate an environment using the conda/ims3d_conda_env.yml:
 ```
-conda env create -f conda/ims3d_conda_env.yml
+conda env create -f ${IMS3D_PATH}/conda/ims3d_conda_env.yml
 conda activate ims3d_env
 ```
 __IMPORTANT__: This last command activates a python environment with all necessary dependencies. This will work __only__ with the appropriate
@@ -37,20 +50,6 @@ Once the environment is activated, the proper python3 binary is used (located at
 - Eugene Eeo's geode library is embedded in the distribution but can be available [here](https://github.com/eugene-eeo/spheres-from-triangles)
 #### Optional
 - [pyvista](https://www.pyvista.org/) (for the viewer only)
-
-## Getting the code
-```
-git clone https://github.com/ycarissan/ims3d.py.git
-```
-
-After this is done, you need to add the directory containing the programs to your PATH:
-
-In bash (replace path_of_the_ims3d.py_file by an appropriate value)
-```
-export IMS3D_PATH=path_of_the_ims3d.py_file
-export PATH=${IMS3D_PATH}:${PATH}
-```
-To make these programs permaneetly available you should add this line to your .bashrc file
 
 # Testing the graphical tools
 All graphics in the code are done using [pyvista](https://www.pyvista.org/).
