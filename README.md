@@ -19,7 +19,7 @@ git clone https://github.com/ycarissan/ims3d.py.git
 
 After this is done, you need to add the directory containing the programs to your PATH:
 
-In bash (replace path_of_the_ims3d.py_file by an appropriate value)
+In bash
 ```
 cd ims3d.py
 export IMS3D_PATH=$PWD
