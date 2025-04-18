@@ -11,6 +11,7 @@ import grids.angular
 import grids.geode
 import interface.gaussian
 import interface.dalton
+import interface.orca
 from tqdm import tqdm
 
 try :
@@ -166,7 +167,7 @@ def main():
     parser.add_argument(
         '-f',
         '--format',
-        choices=['com', 'dal'],
+        choices=['com', 'dal', 'orca'],
         help='output format: %(default)s',
         default="com")
     parser.add_argument(
@@ -304,6 +305,8 @@ def main():
         interface.gaussian.generate_gaussianFile(geom, grid_todo, logger, maxbq = maxbq)
     elif output_format=="dal":
         interface.dalton.generate_daltonFile(geom, grid_todo, logger, maxbq = maxbq)
+    elif output_format=="orca":
+        interface.orca.generate_orcaFile(geom, grid_todo, logger, maxbq = maxbq)
 
     if preview==True:
         values =  np.loadtxt("points_values.csv", delimiter=",", skiprows=1)

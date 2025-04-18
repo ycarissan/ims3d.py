@@ -69,7 +69,7 @@ Read the tutorial [here](https://github.com/ycarissan/ims3d.py/blob/master/tutor
 
 ```
 $ python3 ./ims3d.py -h
-usage: ims3d.py [-h] [-v] [-d] [-r RADIUS] [-n NPTS] [--batch BATCH] [--depth DEPTH] [-o] [-i] [-p] [-a] [-c CYCLE_MAX_SIZE] [-f {com,dal}] geomfile
+usage: ims3d.py [-h] [-v] [-d] [-r RADIUS] [-n NPTS] [--batch BATCH] [--depth DEPTH] [-o] [-i] [-p] [-a] [-c CYCLE_MAX_SIZE] [-f {com,dal,orca}] geomfile
 
 Generate gaussian inputs for IMS calculations.
 
@@ -92,7 +92,7 @@ optional arguments:
   -a, --angular         Activate the deprecated angular grid
   -c CYCLE_MAX_SIZE, --cycle-max-size CYCLE_MAX_SIZE
                         Auto detect cycles of max size: 7
-  -f {com,dal}, --format {com,dal}
+  -f {com,dal,orca}, --format {com,dal,orca}
                         output format: com
 
 Make sure you use the python3 interpreter that comes with the conda environment. If this sentence makes no sense and you get error messages for missing librairies, please read the documentation.
