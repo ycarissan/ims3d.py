@@ -34,6 +34,44 @@ logger.addHandler(ch)
 logger.addHandler(fh)
 
 
+def readorcafile(logfile):
+    f = open(logfile, "r")
+    store_geom = False
+    store_ims = False
+    index = 0
+    geom = []
+    nat = 0
+    nbq = 0
+    for l in f.readlines():
+        if store_geom:
+            if countdown>0:
+                countdown -= 1
+            elif len(l)>1:
+                atmp = l.split()
+#                print(atmp)
+                if float(atmp[2]) == 0.0:
+                    nbq = nbq + 1
+                    lbl = "Bq"
+                    if nat==0:
+                        nat = len(geom)
+                else:
+                    lbl = str(atmp[1])
+                geom.append({'label': lbl,
+                             'x': float(atmp[5])*.529177210,
+                             'y': float(atmp[6])*.529177210,
+                             'z': float(atmp[7])*.529177210
+                            })
+            else:
+                store_geom=False
+        if ("CARTESIAN COORDINATES (A.U.)" in l):
+            store_geom = True
+            countdown=2
+        if ("Total" in l and "iso=" in l):
+            atmp = l.split()
+            geom[index]['ims'] = float(atmp[5])
+            index = index + 1
+#    print(geom)
+    return split_geom_and_grid(geom)
 
 def readdalfile(logfile):
     """
@@ -170,7 +208,7 @@ def main():
     parser.add_argument(
         '-f',
         '--format',
-        choices=['com', 'dal'],
+        choices=['com', 'dal', 'orca'],
         help='output format: %(default)s',
         default="com")
     parser.add_argument(
@@ -223,8 +261,12 @@ def main():
         logger.info("Extracting from {0:s} ".format(f))
         if output_format=="com":
             geom_tmp, ims_grid_tmp = readlogfile(f)
-        else:
+        elif output_format=="dal":
             geom_tmp, ims_grid_tmp = readdalfile(f)
+        elif output_format=="orca":
+            geom_tmp, ims_grid_tmp = readorcafile(f)
+        else:
+            raise SystemExit("Unknown format: {}".format(output_format))
         if len(geom) == 0:
             geom = geom_tmp
             logger.info("geometry and ".format())
