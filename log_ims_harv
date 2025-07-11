@@ -22074,3 +22074,13 @@ radical : input_batch_00000_ref.log
 2025-07-11 15:32:38,355 - log - INFO - Extracting from /home/yannick/prog/ims3d.py.dev/tests/../tests/references/input_batch_00000_ref.log 
 2025-07-11 15:32:38,361 - log - INFO - geometry and 
 2025-07-11 15:32:38,361 - log - INFO - IMS values
+2025-07-11 15:39:43,315 - log - INFO - log file name /home/yannick/prog/ims3d.py.dev/tests/../tests/references/input_batch_00000_ref.log is not of the form *_cycle_i_batch_j.log or *_batch_i.log with i and j decimal numbers.
+2025-07-11 15:39:43,315 - log - INFO - Proceeding without looking for batches i.e. : only /home/yannick/prog/ims3d.py.dev/tests/../tests/references/input_batch_00000_ref.log is processed.
+2025-07-11 15:39:43,315 - log - DEBUG - logfile: /home/yannick/prog/ims3d.py.dev/tests/../tests/references/input_batch_00000_ref.log
+2025-07-11 15:39:43,315 - log - DEBUG - dirname : /home/yannick/prog/ims3d.py.dev/tests/../tests/references
+radical : input_batch_00000_ref.log
+
+2025-07-11 15:39:43,315 - log - DEBUG - logfiles: ['/home/yannick/prog/ims3d.py.dev/tests/../tests/references/input_batch_00000_ref.log'] ...
+2025-07-11 15:39:43,315 - log - INFO - Extracting from /home/yannick/prog/ims3d.py.dev/tests/../tests/references/input_batch_00000_ref.log 
+2025-07-11 15:39:43,321 - log - INFO - geometry and 
+2025-07-11 15:39:43,321 - log - INFO - IMS values

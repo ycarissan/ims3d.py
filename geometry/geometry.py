@@ -31,8 +31,8 @@ dummyElementLabel="Be"
 
 class Geometry:
     def __init__(self, filename, orient = False):
-        lines = open(filename, "r").readlines()
-        filename.close()
+        with open(filename, "r") as f:
+            lines = f.readlines()
         self.header=(lines[1])
         self.atoms = []
         self.pseudoatoms = []
