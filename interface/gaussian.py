@@ -1,3 +1,6 @@
+from interface.generic import split_geom_and_grid
+
+
 def generate_gaussianFile(geom, grid, logger, outdir="./", igrid=0, maxbq=200):
     gaussianfile = outdir + \
         "input_batch_{:05d}.com".format(igrid)
@@ -31,3 +34,31 @@ def generate_gaussianFile(geom, grid, logger, outdir="./", igrid=0, maxbq=200):
     return
 
 
+def readlogfile(logfile):
+    """
+    Read a guassian output file and store the geometry and the ims values (if any)
+    """
+    f = open(logfile, "r")
+    store_geom = False
+    store_ims = False
+    index = 0
+    geom = []
+    for l in f.readlines():
+        if (("Charge" in l) and ("Multiplicity" in l)):
+            store_geom = True
+        if (store_geom and len(l) ==
+                2):  # line with 1 space character and a carriage return symbol
+            # end of geometry
+            store_geom = False
+        if (store_geom and not("Charge" in l)):
+            atmp = l.split()
+            geom.append({'label': str(atmp[0]),
+                         'x': float(atmp[1]),
+                         'y': float(atmp[2]),
+                         'z': float(atmp[3])
+                         })
+        if ("Anisotropy" in l):
+            atmp = l.split()
+            geom[index]['ims'] = float(atmp[4])
+            index = index + 1
+    return split_geom_and_grid(geom)

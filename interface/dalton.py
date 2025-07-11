@@ -1,5 +1,7 @@
 import pymatgen
 
+from interface.generic import split_geom_and_grid
+
 def generate_daltonFile(geom, grid, logger, outdir="./", igrid=0, maxbq=50, all_atoms=None, atomtypes=None):
     grid_size = len(grid)
     batch=[]
@@ -32,3 +34,45 @@ def generate_daltonFile(geom, grid, logger, outdir="./", igrid=0, maxbq=50, all_
         f.close()
     return
 
+def readdalfile(logfile):
+    """
+    Read a dalton output file and store the geometry and the ims values (if any)
+    """
+    f = open(logfile, "r")
+    store_geom = False
+    store_ims = False
+    index = 0
+    geom = []
+    for l in f.readlines():
+        if store_geom:
+            if countdown>0:
+                countdown -= 1
+            elif len(l)>1:
+                atmp = l.split()
+                if (len(atmp)==5):
+                    geom.append({'label': str(atmp[0]),
+                        'x': float(atmp[2])*.529177210,
+                        'y': float(atmp[3])*.529177210,
+                        'z': float(atmp[4])*.529177210
+                        })
+                else:
+                    geom.append({'label': str(atmp[0]),
+                        'x': float(atmp[1])*.529177210,
+                        'y': float(atmp[2])*.529177210,
+                        'z': float(atmp[3])*.529177210
+                        })
+            else:
+                store_geom=False
+        if ("Molecular geometry (au)" in l):
+            store_geom = True
+            countdown=2
+        if ("@2" in l):
+            atmp = l.split()
+            if not "shielding" in l:
+                if len(atmp)==10:
+                    geom[index]['ims'] = float(atmp[3])
+                    index = index + 1
+                elif len(atmp)==9:
+                    geom[index]['ims'] = float(atmp[2])
+                    index = index + 1
+    return split_geom_and_grid(geom)

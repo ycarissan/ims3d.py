@@ -8,6 +8,9 @@ import logging
 import geometry.geometry
 
 import grids.angular
+from interface.dalton import readdalfile
+from interface.gaussian import readlogfile
+from interface.orca import readorcafile
 
 # Create logger
 logger = logging.getLogger('log')
@@ -32,132 +35,6 @@ fh.setFormatter(formatter)
 # add ch to logger
 logger.addHandler(ch)
 logger.addHandler(fh)
-
-
-def readorcafile(logfile):
-    f = open(logfile, "r")
-    store_geom = False
-    store_ims = False
-    index = 0
-    geom = []
-    nat = 0
-    nbq = 0
-    for l in f.readlines():
-        if store_geom:
-            if countdown>0:
-                countdown -= 1
-            elif len(l)>1:
-                atmp = l.split()
-#                print(atmp)
-                if float(atmp[2]) == 0.0:
-                    nbq = nbq + 1
-                    lbl = "Bq"
-                    if nat==0:
-                        nat = len(geom)
-                else:
-                    lbl = str(atmp[1])
-                geom.append({'label': lbl,
-                             'x': float(atmp[5])*.529177210,
-                             'y': float(atmp[6])*.529177210,
-                             'z': float(atmp[7])*.529177210
-                            })
-            else:
-                store_geom=False
-        if ("CARTESIAN COORDINATES (A.U.)" in l):
-            store_geom = True
-            countdown=2
-        if ("Total" in l and "iso=" in l):
-            atmp = l.split()
-            geom[index]['ims'] = float(atmp[5])
-            index = index + 1
-#    print(geom)
-    return split_geom_and_grid(geom)
-
-def readdalfile(logfile):
-    """
-    Read a dalton output file and store the geometry and the ims values (if any)
-    """
-    f = open(logfile, "r")
-    store_geom = False
-    store_ims = False
-    index = 0
-    geom = []
-    for l in f.readlines():
-        if store_geom:
-            if countdown>0:
-                countdown -= 1
-            elif len(l)>1:
-                atmp = l.split()
-                if (len(atmp)==5):
-                    geom.append({'label': str(atmp[0]),
-                        'x': float(atmp[2])*.529177210,
-                        'y': float(atmp[3])*.529177210,
-                        'z': float(atmp[4])*.529177210
-                        })
-                else:
-                    geom.append({'label': str(atmp[0]),
-                        'x': float(atmp[1])*.529177210,
-                        'y': float(atmp[2])*.529177210,
-                        'z': float(atmp[3])*.529177210
-                        })
-            else:
-                store_geom=False
-        if ("Molecular geometry (au)" in l):
-            store_geom = True
-            countdown=2
-        if ("@2" in l):
-            atmp = l.split()
-            if not "shielding" in l:
-                if len(atmp)==10:
-                    geom[index]['ims'] = float(atmp[3])
-                    index = index + 1
-                elif len(atmp)==9:
-                    geom[index]['ims'] = float(atmp[2])
-                    index = index + 1
-    return split_geom_and_grid(geom)
-
-def readlogfile(logfile):
-    """
-    Read a guassian output file and store the geometry and the ims values (if any)
-    """
-    f = open(logfile, "r")
-    store_geom = False
-    store_ims = False
-    index = 0
-    geom = []
-    for l in f.readlines():
-        if (("Charge" in l) and ("Multiplicity" in l)):
-            store_geom = True
-        if (store_geom and len(l) ==
-                2):  # line with 1 space character and a carriage return symbol
-            # end of geometry
-            store_geom = False
-        if (store_geom and not("Charge" in l)):
-            atmp = l.split()
-            geom.append({'label': str(atmp[0]),
-                         'x': float(atmp[1]),
-                         'y': float(atmp[2]),
-                         'z': float(atmp[3])
-                         })
-        if ("Anisotropy" in l):
-            atmp = l.split()
-            geom[index]['ims'] = float(atmp[4])
-            index = index + 1
-    return split_geom_and_grid(geom)
-
-def split_geom_and_grid(geom):
-    # split data into two sparate lists
-    # as one will process many log files and want only 1 geometry but the full
-    # ims grid
-    g = geom
-    ims_grid = []
-    geom = []
-    for el in g:
-        if "Bq" in el['label']:  # it is a bq atom -> ims grid
-            ims_grid.append(el)
-        else:
-            geom.append(el)
-    return geom, ims_grid
 
 def store_data(geom, ims_grid, geode=True):
     geom_file = "geom.xyz"
