@@ -1,0 +1,8 @@
+2025-07-11 14:41:42,272 - log - INFO - log file name input_batch_00000_ref.log is not of the form *_cycle_i_batch_j.log or *_batch_i.log with i and j decimal numbers.
+2025-07-11 14:41:42,272 - log - INFO - Proceeding without looking for batches i.e. : only input_batch_00000_ref.log is processed.
+2025-07-11 14:41:42,272 - log - DEBUG - logfile: input_batch_00000_ref.log
+2025-07-11 14:41:42,272 - log - DEBUG - dirname : .
+radical : input_batch_00000_ref.log
+
+2025-07-11 14:41:42,272 - log - DEBUG - logfiles: ['input_batch_00000_ref.log'] ...
+2025-07-11 14:41:42,272 - log - INFO - Extracting from input_batch_00000_ref.log 

@@ -1,0 +1,10 @@
+2025-07-11 14:43:22,988 - log - INFO - log file name input_batch_00000_ref.log is not of the form *_cycle_i_batch_j.log or *_batch_i.log with i and j decimal numbers.
+2025-07-11 14:43:22,988 - log - INFO - Proceeding without looking for batches i.e. : only input_batch_00000_ref.log is processed.
+2025-07-11 14:43:22,988 - log - DEBUG - logfile: input_batch_00000_ref.log
+2025-07-11 14:43:22,988 - log - DEBUG - dirname : .
+radical : input_batch_00000_ref.log
+
+2025-07-11 14:43:22,988 - log - DEBUG - logfiles: ['input_batch_00000_ref.log'] ...
+2025-07-11 14:43:22,988 - log - INFO - Extracting from input_batch_00000_ref.log 
+2025-07-11 14:43:22,994 - log - INFO - geometry and 
+2025-07-11 14:43:22,994 - log - INFO - IMS values

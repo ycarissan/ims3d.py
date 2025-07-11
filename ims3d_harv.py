@@ -221,12 +221,22 @@ def main():
     npts = args.npts
     output_format = args.format
     geode = not(args.angular)
+    logfiles= []
+    #check if logfile has a name of the form input_cycle_i_batch_j.log where i and j are decimal numbers
     if output_format=="com":
         radical = re.sub(r'_cycle_\d*_batch_\d*.log$', '', os.path.basename(logfile))
         radical = re.sub(r'_batch_\d*.log$', '', os.path.basename(logfile))
+        if not (re.match(r'input_cycle_\d+_batch_\d+\.log$', logfile) or re.match(r'input_batch_\d+\.log$', logfile)):
+            logger.info("log file name {} is not of the form *_cycle_i_batch_j.log or *_batch_i.log with i and j decimal numbers.".format(logfile))
+            logger.info("Proceeding without looking for batches i.e. : only {} is processed.".format(logfile))
+            logfiles.append(logfile)
     else:
         radical = re.sub(r'_cycle_\d*_batch_\d*.out$', '', os.path.basename(logfile))
         radical = re.sub(r'_batch_\d*.out$', '', os.path.basename(logfile))
+        if not (re.match(r'input_cycle_\d+_batch_\d+\.out$', logfile) or re.match(r'input_batch_\d+\.out$', logfile)):
+            logger.info("out file name {} is not of the form *_cycle_i_batch_j.out or *_batch_i.out with i and j decimal numbers.".format(logfile))
+            logger.info("Proceeding without looking for batches i.e. : only {} is processed.".format(logfile))
+            logfiles.append(logfile)
     dirname = os.path.dirname(logfile)
     if len(dirname)==0:
         dirname="."
@@ -240,19 +250,21 @@ def main():
 #  and the data for all these files
 #
     if output_format=="com":
-        logfiles = sorted(
+        if len(logfiles)==0:
+            logfiles = sorted(
                 glob.glob(
                     dirname +
                     "/" +
                     radical +
                     "_batch_[0-9]*.log"))
     else:
-        logfiles = sorted(
-                glob.glob(
-                    dirname +
-                    "/" +
-                    radical +
-                    "_batch_[0-9]*.out"))
+        if len(logfiles)==0:
+            logfiles = sorted(
+                    glob.glob(
+                        dirname +
+                        "/" +
+                        radical +
+                        "_batch_[0-9]*.out"))
     logger.debug("dirname : {}\nradical : {}\n".format(dirname, radical))
     logger.debug("logfiles: {} ...".format(logfiles))
     geom = []
