@@ -61,4 +61,5 @@ def readlogfile(logfile):
             atmp = l.split()
             geom[index]['ims'] = float(atmp[4])
             index = index + 1
+    f.close()
     return split_geom_and_grid(geom)

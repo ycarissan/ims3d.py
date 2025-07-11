@@ -68,6 +68,7 @@ def readorcafile(logfile):
             geom[index]['ims'] = float(atmp[5])
             index = index + 1
 #    print(geom)
+    f.close()
     return split_geom_and_grid(geom)
 
 

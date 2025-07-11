@@ -75,4 +75,5 @@ def readdalfile(logfile):
                 elif len(atmp)==9:
                     geom[index]['ims'] = float(atmp[2])
                     index = index + 1
+    f.close()
     return split_geom_and_grid(geom)
