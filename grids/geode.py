@@ -34,6 +34,7 @@ class geodesic_grid:
             "B": 1.55,
             "BE": 1.55,
             "Be": 1.55,
+            "P": 1.80,
             "CL": 1.75,
             "F": 1.75
             }
@@ -51,6 +52,7 @@ class geodesic_grid:
                     "B":  radius_all,
                     "Be":  radius_all,
                     "BE":  radius_all,
+                    "P": radius_all,
                     "CL": radius_all,
                     "F": radius_all
                     }
