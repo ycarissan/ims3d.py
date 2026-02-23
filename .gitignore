@@ -6,5 +6,7 @@ tutorial/nics.dat
 tutorial/normals.csv
 tutorial/p_mesh_c.ply
 tutorial/points_values.csv
-log_ims_harv
-log_ims_prep_angular
+log_*
+tmpfile_*
+points_values.csv
+*.bin

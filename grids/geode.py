@@ -22,6 +22,7 @@ except ModuleNotFoundError as error:
     print("Module numba not found: the conda environment needs update.\nRunnig the following command will fix the problem:\n\nconda env update --file ${IMS3D_HOME}/conda/ims3d_conda_env.yml --prune\n")
     quit()
 
+
 class geodesic_grid:
     vdw_radii_standard = {
             dummyElementLabel: 1.0,
@@ -34,54 +35,41 @@ class geodesic_grid:
             "B": 1.55,
             "BE": 1.55,
             "Be": 1.55,
-            "P": 1.80,
             "CL": 1.75,
             "F": 1.75
             }
-    def __init__(self, depth, vdw_radii=vdw_radii_standard, ignoreH = False, radius_all=None):
+    def __init__(self, depth, vdw_radii=vdw_radii_standard, ignoreH=False, radius_all=None):
         self.depth = depth
-        if not(radius_all == None):
-            self.vdw_radii = {
-                    dummyElementLabel:  radius_all,
-                    dummyElementLabel.capitalize():  radius_all,
-                    "H":  radius_all,
-                    "C":  radius_all,
-                    "O":  radius_all,
-                    "N":  radius_all,
-                    "S":  radius_all,
-                    "B":  radius_all,
-                    "Be":  radius_all,
-                    "BE":  radius_all,
-                    "P": radius_all,
-                    "CL": radius_all,
-                    "F": radius_all
-                    }
+        if radius_all is not None:
+            self.vdw_radii = {k: radius_all for k in self.vdw_radii_standard}
         else:
             self.vdw_radii = vdw_radii
         self.ignoreH = ignoreH
 
+
 Triangle = namedtuple("Triangle", "a,b,c")
-Point = namedtuple("Point", "x,y,z")
+Point    = namedtuple("Point",    "x,y,z")
+
 
 @jit(nopython=True, cache=True)
 def optimized_norm(pt):
     return np.linalg.norm(pt)
 
+
 def get_dict_classifier_key(pt):
-    norm = optimized_norm(pt)
-    norm = "{:.5f}".format(norm)
-    return norm
+    norm = optimized_norm(np.array(pt))
+    return "{:.5f}".format(norm)
+
 
 def get_dict_classifier(grid):
-    dict_grid={}
-#    print("Classifier generation")
+    dict_grid = {}
     for pt in grid:
         norm = get_dict_classifier_key(pt)
-        if not (norm in dict_grid.keys()):
-            dict_grid[norm]=[]
+        if norm not in dict_grid:
+            dict_grid[norm] = []
         dict_grid[norm].append(pt)
-#    print("Done")
     return dict_grid
+
 
 def normalize(p):
     s = sum(u*u for u in p) ** 0.5
@@ -157,15 +145,8 @@ def subdivide_midpoint2(tri, depth):
     if depth == 0:
         yield tri
         return
-    #       p0
-    #      /|\
-    #     / | \
-    #    /  |  \
-    #   /___|___\
-    # p1   m12   p2
     p0, p1, p2 = tri
     m12 = normalize(midpoint(p1, p2))
-    # WRONG TRIANGULATION!
     yield from subdivide_midpoint2(Triangle(p0, m12, p1), depth-1)
     yield from subdivide_midpoint2(Triangle(p0, p2, m12), depth-1)
 
@@ -174,12 +155,6 @@ def subdivide_midpoint(tri, depth):
     if depth == 0:
         yield tri
         return
-    #       p0
-    #      /|\
-    #     / | \
-    #    /  |  \
-    #   /___|___\
-    # p1   m12   p2
     p0, p1, p2 = tri
     m12 = normalize(midpoint(p1, p2))
     yield from subdivide_midpoint(Triangle(m12, p0, p1), depth-1)
@@ -190,12 +165,6 @@ def subdivide_edge(tri, depth):
     if depth == 0:
         yield tri
         return
-    #       p0
-    #      /  \
-    # m01 /....\ m02
-    #    / \  / \
-    #   /___\/___\
-    # p1    m12   p2
     p0, p1, p2 = tri
     m01 = normalize(midpoint(p0, p1))
     m02 = normalize(midpoint(p0, p2))
@@ -214,169 +183,128 @@ def subdivide_centroid(tri, depth):
     if depth == 0:
         yield tri
         return
-    #       p0
-    #       / \
-    #      /   \
-    #     /  c  \
-    #    /_______\
-    #  p1         p2
     p0, p1, p2 = tri
     centroid = normalize(Point(
         (p0.x + p1.x + p2.x) / 3,
         (p0.y + p1.y + p2.y) / 3,
         (p0.z + p1.z + p2.z) / 3,
     ))
-    t1 = Triangle(p0, p1, centroid)
-    t2 = Triangle(p2, centroid, p0)
-    t3 = Triangle(centroid, p1, p2)
-
-    yield from subdivide_centroid(t1, depth - 1)
-    yield from subdivide_centroid(t2, depth - 1)
-    yield from subdivide_centroid(t3, depth - 1)
+    yield from subdivide_centroid(Triangle(p0, p1, centroid),   depth - 1)
+    yield from subdivide_centroid(Triangle(p2, centroid, p0),   depth - 1)
+    yield from subdivide_centroid(Triangle(centroid, p1, p2),   depth - 1)
 
 
 def subdivide(faces, depth, method):
     for tri in faces:
         yield from method(tri, depth)
 
+
 def get_geode(depth=2, method=None):
-    if method==None:
+    if method is None:
         method = subdivide_edge
-    # octahedron
     p = 2**0.5 / 2
     faces = [
-        # top half
         Triangle(Point(0, 1, 0), Point(-p, 0, p), Point( p, 0, p)),
         Triangle(Point(0, 1, 0), Point( p, 0, p), Point( p, 0,-p)),
         Triangle(Point(0, 1, 0), Point( p, 0,-p), Point(-p, 0,-p)),
         Triangle(Point(0, 1, 0), Point(-p, 0,-p), Point(-p, 0, p)),
-
-        # bottom half
         Triangle(Point(0,-1, 0), Point( p, 0, p), Point(-p, 0, p)),
         Triangle(Point(0,-1, 0), Point( p, 0,-p), Point( p, 0, p)),
         Triangle(Point(0,-1, 0), Point(-p, 0,-p), Point( p, 0,-p)),
         Triangle(Point(0,-1, 0), Point(-p, 0, p), Point(-p, 0,-p)),
     ]
 
-    X = []
-    Y = []
-    Z = []
-    T = []
-
+    X, Y, Z, T_list = [], [], [], []
     for i, tri in enumerate(subdivide(faces, depth, method)):
         X.extend([p.x for p in tri])
         Y.extend([p.y for p in tri])
         Z.extend([p.z for p in tri])
-        T.append([3*i, 3*i+1, 3*i+2])
+        T_list.append([3*i, 3*i+1, 3*i+2])
 
     X = np.array(X)
     Y = np.array(Y)
     Z = np.array(Z)
-    T = mtri.Triangulation(X, Y, np.array(T))
+    T = mtri.Triangulation(X, Y, np.array(T_list))
 
     return X, Y, Z, T
 
+
 def get_geode_points(depth=2, method=None):
     X, Y, Z, T = get_geode(depth, method)
-    points=[]
-    for x, y, z in zip(X, Y, Z):
-        points.append([x, y, z])
-    return np.asarray(points)
+    points = np.stack([X, Y, Z], axis=1)
+    return points
 
-def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry = False):
+
+def generate_geodesic_grid(geom, geodesic_grid, logger, restrict_to_atom_indices=None):
+    """
+    Generate the geodesic grid around a molecule.
+
+    Parameters
+    ----------
+    restrict_to_atom_indices : list of int or None
+        If provided, generate grid spheres only around these atom indices
+        (indices into geom.getAllcenters()). VdW filtering always uses the
+        full set of atoms. Used to restrict generation to symmetry-unique
+        atoms while keeping correct occlusion by all atoms.
+    """
     grid = []
-    if symmetry:
-        pga = geom.getPGA()
-        symmetry_operations = pga.get_symmetry_operations()
-    for atom in tqdm(geom.atoms+geom.spherecenters+geom.pseudoatoms):
-        at    = np.array([ atom['x'], atom['y'], atom['z'] ])
-        radius = geodesic_grid.vdw_radii[atom['label']]
-        geodesic_points = get_geode_points(geodesic_grid.depth)
-        geodesic_points = np.unique(geodesic_points.round(decimals=8),axis=0)
-        tmpgrid=[]
-        for i in range(len(geodesic_points)):
-            pt=geodesic_points[i]
-            #
-            # Compute the distance between the point and the current atom
-            #
-            point = at.copy()
-            point[0] = point[0] + pt[0]*radius #translate point coordinates to the atomic repere
-            point[1] = point[1] + pt[1]*radius #translate point coordinates to the atomic repere
-            point[2] = point[2] + pt[2]*radius #translate point coordinates to the atomic repere
-            tmpgrid.append(point)
-        dict_geode = get_dict_classifier(tmpgrid)
+    all_atoms = geom.getAllcenters()   # atoms + pseudoatoms + spherecenters
 
-#        print("Check symmetry")
-        generated_by_symmetry=[]
-        if symmetry:
-            for i in range(len(tmpgrid)):
-                point=tmpgrid[i]
-                k=get_dict_classifier_key(point)
-                for j in range(i+1,len(tmpgrid)):
-                    if not j in generated_by_symmetry:
-                        ptB=tmpgrid[j]
-                        if get_dict_classifier_key(ptB)==k:
-                            for op in symmetry_operations:
-                                if op.are_symmetrically_related(point, ptB):
-                                    generated_by_symmetry.append(j)
-                                    break
-#        print("Done")
+    # ── Calcul unique de la géodésique (avant la boucle) ──────────────────
+    geodesic_points = get_geode_points(geodesic_grid.depth)
+    geodesic_points = np.unique(geodesic_points.round(decimals=8), axis=0)
+    # shape: (P, 3)
 
-        for i in range(len(tmpgrid)):
-            addAtom = True
-            if symmetry and i in generated_by_symmetry:
-                addAtom = False
-                continue
+    # ── Pré-calcul des positions et rayons de tous les atomes ─────────────
+    all_positions = np.array([[a['x'], a['y'], a['z']] for a in all_atoms])
+    all_radii     = np.array([geodesic_grid.vdw_radii[a['label']] for a in all_atoms])
 
-            point=tmpgrid[i]
-            if addAtom:
-                for other_atom in geom.atoms+geom.spherecenters+geom.pseudoatoms:
-                    #
-                    # Check that we are looping over other atoms only (not the current one)
-                    #
-                    same_atom = False 
-                    other_at = np.array([ other_atom['x'], other_atom['y'], other_atom['z'] ])
-                    thrs=0.001
-                    if (np.abs(at[0]-other_at[0]) < thrs) and (np.abs(at[1]-other_at[1]) < thrs) and (np.abs(at[2]-other_at[2]) < thrs):
-                        same_atom = True
+    # Indices des atomes autour desquels on génère la grille
+    if restrict_to_atom_indices is not None:
+        generate_indices = restrict_to_atom_indices
+    else:
+        generate_indices = list(range(len(all_atoms)))
 
-                    #dist_at_other_at = np.linalg.norm(np.array( [ at[i] - other_at[i] for i in range(3)] ) )
-                    #if dist_at_other_at < 1e-6:
-                    #    same_atom = True
-                    if not(same_atom):
-                        #
-                        # Compute the distance between the point and the other atom
-                        #
-                        dist_point_other_at = optimized_norm(np.array( [ point[i] - other_at[i] for i in range(3)] ) )
-                        #
-                        # Get the vdw radius of the other atom
-                        #
-                        other_radius = geodesic_grid.vdw_radii[other_atom['label']]
-                        #
-                        # if the point is within the vdw radius of the other atom, skip it
-                        #
-                        if (dist_point_other_at < other_radius):
-                            addAtom = False
+    for idx in tqdm(generate_indices):
+        at     = all_positions[idx]
+        radius = all_radii[idx]
 
-            if addAtom:
-                logger.debug(
-                        "Bq     {0[0]:16.10f} {0[1]:16.10f} {0[2]:16.10f} {1}\n".format(point,point[0]+point[1]))
-                grid.append(point)
+        # Translation + mise à l'échelle vectorisée — shape: (P, 3)
+        tmpgrid = at + geodesic_points * radius
+
+        # ── Filtrage vectorisé ────────────────────────────────────────────
+        other_mask      = np.ones(len(all_atoms), dtype=bool)
+        other_mask[idx] = False
+        other_positions = all_positions[other_mask]  # (M-1, 3)
+        other_radii     = all_radii[other_mask]       # (M-1,)
+
+        if len(other_positions) > 0:
+            # diff : (P, M-1, 3) → dists : (P, M-1)
+            diff  = tmpgrid[:, np.newaxis, :] - other_positions[np.newaxis, :, :]
+            dists = np.linalg.norm(diff, axis=2)
+            valid = np.all(dists >= other_radii, axis=1)  # (P,)
+        else:
+            valid = np.ones(len(tmpgrid), dtype=bool)
+
+        grid.extend(tmpgrid[valid].tolist())
+
     return grid
+
 
 def writegrid(grid):
     np.savetxt("points_values.csv", grid, delimiter=",", header='#x,y,z,v')
 
+
 if __name__ == '__main__':
 
     method = {
-        "hybrid":   subdivide_hybrid,
-        "hybrid2":  subdivide_hybrid2,
-        "hybrid3":  subdivide_hybrid3,
-        "midpoint": subdivide_midpoint,
+        "hybrid":    subdivide_hybrid,
+        "hybrid2":   subdivide_hybrid2,
+        "hybrid3":   subdivide_hybrid3,
+        "midpoint":  subdivide_midpoint,
         "midpoint2": subdivide_midpoint2,
-        "centroid": subdivide_centroid,
-        "edge":     subdivide_edge,
+        "centroid":  subdivide_centroid,
+        "edge":      subdivide_edge,
         }[sys.argv[1]]
     depth = int(sys.argv[2])
     color = getattr(cm, sys.argv[3] if len(sys.argv) >= 4 else 'coolwarm')
