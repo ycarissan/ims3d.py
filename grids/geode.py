@@ -235,13 +235,20 @@ def get_geode_points(depth=2, method=None):
     return points
 
 
-def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry=False):
-    grid = []
-    all_atoms = geom.atoms + geom.spherecenters + geom.pseudoatoms
+def generate_geodesic_grid(geom, geodesic_grid, logger, restrict_to_atom_indices=None):
+    """
+    Generate the geodesic grid around a molecule.
 
-    if symmetry:
-        pga = geom.getPGA()
-        symmetry_operations = pga.get_symmetry_operations()
+    Parameters
+    ----------
+    restrict_to_atom_indices : list of int or None
+        If provided, generate grid spheres only around these atom indices
+        (indices into geom.getAllcenters()). VdW filtering always uses the
+        full set of atoms. Used to restrict generation to symmetry-unique
+        atoms while keeping correct occlusion by all atoms.
+    """
+    grid = []
+    all_atoms = geom.getAllcenters()   # atoms + pseudoatoms + spherecenters
 
     # ── Calcul unique de la géodésique (avant la boucle) ──────────────────
     geodesic_points = get_geode_points(geodesic_grid.depth)
@@ -252,7 +259,13 @@ def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry=False):
     all_positions = np.array([[a['x'], a['y'], a['z']] for a in all_atoms])
     all_radii     = np.array([geodesic_grid.vdw_radii[a['label']] for a in all_atoms])
 
-    for idx, atom in enumerate(tqdm(all_atoms)):
+    # Indices des atomes autour desquels on génère la grille
+    if restrict_to_atom_indices is not None:
+        generate_indices = restrict_to_atom_indices
+    else:
+        generate_indices = list(range(len(all_atoms)))
+
+    for idx in tqdm(generate_indices):
         at     = all_positions[idx]
         radius = all_radii[idx]
 
@@ -273,27 +286,7 @@ def generate_geodesic_grid(geom, geodesic_grid, logger, symmetry=False):
         else:
             valid = np.ones(len(tmpgrid), dtype=bool)
 
-        valid_points = tmpgrid[valid]
-
-        # ── Symétrie (inchangée, rarement utilisée) ───────────────────────
-        if symmetry:
-            kept = []
-            generated_by_symmetry = set()
-            for i in range(len(valid_points)):
-                if i in generated_by_symmetry:
-                    continue
-                kept.append(valid_points[i])
-                k = get_dict_classifier_key(valid_points[i])
-                for j in range(i + 1, len(valid_points)):
-                    if j not in generated_by_symmetry:
-                        if get_dict_classifier_key(valid_points[j]) == k:
-                            for op in symmetry_operations:
-                                if op.are_symmetrically_related(valid_points[i], valid_points[j]):
-                                    generated_by_symmetry.add(j)
-                                    break
-            grid.extend(kept)
-        else:
-            grid.extend(valid_points.tolist())
+        grid.extend(tmpgrid[valid].tolist())
 
     return grid
 
