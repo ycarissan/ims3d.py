@@ -35,10 +35,10 @@ def generate_pyscfFile(geom, grid, logger, outdir="./", igrid=0, maxbq=200):
         f.write("{:s}  {:16.10f}  {:16.10f}  {:16.10f}\n".format(
             at['label'], at['x'], at['y'], at['z']))
     f.write("'''\n")
-    f.write("mol.basis = {{\n")
+    f.write("mol.basis = {\n")
     for lbl in unique_labels:
         f.write("    '{}': '6-311++g**',\n".format(lbl))
-    f.write("}}\n")
+    f.write("}\n")
     f.write("mol.charge = 0\n")
     f.write("mol.spin = 0\n")
     f.write("mol.build()\n\n")
