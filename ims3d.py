@@ -12,6 +12,7 @@ import grids.geode
 import interface.gaussian
 import interface.dalton
 import interface.orca
+import interface.pyscf_iface
 from tqdm import tqdm
 
 try :
@@ -167,7 +168,7 @@ def main():
     parser.add_argument(
         '-f',
         '--format',
-        choices=['com', 'dal', 'orca'],
+        choices=['com', 'dal', 'orca', 'pyscf'],
         help='output format: %(default)s',
         default="com")
     parser.add_argument(
@@ -281,6 +282,8 @@ def main():
         interface.dalton.generate_daltonFile(geom, grid_todo, logger, maxbq = maxbq)
     elif output_format=="orca":
         interface.orca.generate_orcaFile(geom, grid_todo, logger, maxbq = maxbq)
+    elif output_format=="pyscf":
+        interface.pyscf_iface.generate_pyscfFile(geom, grid_todo, logger, maxbq = maxbq)
 
     if preview==True:
         values =  np.loadtxt("points_values.csv", delimiter=",", skiprows=1)

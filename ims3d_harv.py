@@ -11,6 +11,7 @@ import grids.angular
 from interface.dalton import readdalfile
 from interface.gaussian import readlogfile
 from interface.orca import readorcafile
+from interface.pyscf_iface import readpyscffile
 
 # Create logger
 logger = logging.getLogger('log')
@@ -85,7 +86,7 @@ def main():
     parser.add_argument(
         '-f',
         '--format',
-        choices=['com', 'dal', 'orca'],
+        choices=['com', 'dal', 'orca', 'pyscf'],
         help='output format: %(default)s',
         default="com")
     parser.add_argument(
@@ -154,6 +155,8 @@ def main():
             geom_tmp, ims_grid_tmp = readdalfile(f)
         elif output_format=="orca":
             geom_tmp, ims_grid_tmp = readorcafile(f)
+        elif output_format=="pyscf":
+            geom_tmp, ims_grid_tmp = readpyscffile(f)
         else:
             raise SystemExit("Unknown format: {}".format(output_format))
         if len(geom) == 0:
