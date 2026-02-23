@@ -46,6 +46,25 @@ class TestGridSymmetryReduction(unittest.TestCase):
         return geode_module.generate_geodesic_grid(
             geom, geo_grid, None, restrict_to_atom_indices=restrict)
 
+    @staticmethod
+    def _expand_grid(sym_grid, sym_ops):
+        """Étend sym_grid en appliquant les opérations de symétrie, avec déduplication."""
+        result = [list(pt) for pt in sym_grid]
+        seen = set()
+        for pt in sym_grid:
+            seen.add((round(pt[0], 5), round(pt[1], 5), round(pt[2], 5)))
+        for op in sym_ops:
+            for pt in sym_grid:
+                coords    = np.array(pt)
+                newcoords = op.operate(coords)
+                if np.linalg.norm(newcoords - coords) < 1e-6:
+                    continue
+                key = (round(newcoords[0], 5), round(newcoords[1], 5), round(newcoords[2], 5))
+                if key not in seen:
+                    seen.add(key)
+                    result.append(newcoords.tolist())
+        return result
+
     def _check_no_vdw_overlap(self, geom, grid, depth=2, tol=1e-3):
         """Vérifie qu'aucun point de la grille n'est à l'intérieur d'une sphère VdW."""
         geo_grid  = geode_module.geodesic_grid(depth=depth)
@@ -124,6 +143,19 @@ class TestGridSymmetryReduction(unittest.TestCase):
         self.assertAlmostEqual(ratio_pts, ratio_expected, delta=0.15,
                                msg=f"Ratio observé {ratio_pts:.2f} trop éloigné "
                                    f"du ratio attendu {ratio_expected:.2f}")
+
+    def test_expanded_grid_equals_full_naphthalene(self):
+        """Après expansion par symétrie, la grille doit retrouver exactement la grille complète."""
+        geom   = self._make_geom(self.NAPHTALENE_XYZ)
+        pga    = geom.getPGA()
+        unique = list(pga.get_equivalent_atoms()["eq_sets"].keys())
+        full_grid = self._make_grid(geom)
+        sym_grid  = self._make_grid(geom, restrict=unique)
+        expanded  = self._expand_grid(sym_grid, pga.get_symmetry_operations())
+        self.assertEqual(
+            len(expanded), len(full_grid),
+            f"Grille étendue ({len(expanded)} pts) ≠ grille complète ({len(full_grid)} pts)"
+        )
 
 
 class TestIMS3D(unittest.TestCase):
