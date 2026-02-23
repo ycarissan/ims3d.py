@@ -1,0 +1,22 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          environment-file: conda/ims3d_conda_env.yml
+          activate-environment: ims3d_env
+          auto-activate-base: false
+
+      - name: Run unit tests
+        shell: bash -el {0}
+        working-directory: tests
+        run: python3 -m unittest -v
