@@ -236,21 +236,25 @@ def applySymmOps(sym_ops, points):
     return points
 
 def applySymmOps_onGrid(sym_ops, grid):
-    toadd=[]
-    for op in sym_ops:
-        generated=np.array([])
-        for i in tqdm(range(len(grid))):
-            pt = grid[i]
-            coords = np.array([pt["x"], pt["y"], pt["z"]])
-            val=pt['ims']
+    """Expand grid by applying symmetry operations, with deduplication."""
+    result = list(grid)
+    seen = set()
+    for pt in grid:
+        key = (round(pt['x'], 5), round(pt['y'], 5), round(pt['z'], 5))
+        seen.add(key)
+    for op in tqdm(sym_ops):
+        for pt in grid:   # itère uniquement sur les points uniques originaux
+            coords    = np.array([pt['x'], pt['y'], pt['z']])
             newcoords = op.operate(coords)
-            if np.linalg.norm(newcoords-coords)>0.0001:
-                generated = np.append(generated, {'label': 'Bq', 'x': newcoords[0], 'y': newcoords[1], 'z': newcoords[2], 'ims': val})
-        if len(generated)>0:
-            toadd.append(generated)
-    for generated in toadd:
-        grid = np.append(grid, generated)
-    return grid
+            if np.linalg.norm(newcoords - coords) < 1e-6:
+                continue  # point fixe sous cette opération
+            key = (round(newcoords[0], 5), round(newcoords[1], 5), round(newcoords[2], 5))
+            if key not in seen:
+                seen.add(key)
+                result.append({'label': 'Bq',
+                               'x': newcoords[0], 'y': newcoords[1], 'z': newcoords[2],
+                               'ims': pt['ims']})
+    return result
 
 def readSymmOps():
     try:

@@ -6,4 +6,7 @@ tutorial/nics.dat
 tutorial/normals.csv
 tutorial/p_mesh_c.ply
 tutorial/points_values.csv
-
+log_*
+tmpfile_*
+points_values.csv
+*.bin
