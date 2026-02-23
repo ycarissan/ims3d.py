@@ -10,3 +10,7 @@ dependencies:
  - openbabel
  - tqdm
  - numba
+ - pip
+ - pip:
+   - pyscf
+   - pyscf.properties
